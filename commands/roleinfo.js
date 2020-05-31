@@ -31,13 +31,9 @@ module.exports = {
         if (Number(collected.first().content) > roles.length) return message.channel.send(":x: | Invalid role number. Command cancelled.");
         roles = roles[collected.first().content - 1]
         let count = 0;
-        for (var e = 0; e < roles.length; e++) {
-          message.guild.members.cache.forEach(member => {
-            member.roles.cache.forEach(role => {
-              if (role.id === roles[e].id) count += 1
-            })
-          })
-        }    
+        message.guild.members.cache.forEach(member => {
+          if (member.roles.cache.get(roles.id)) count++
+        })  
         sendRoleEmbed(roles, count);
       }).catch(err => {
         return message.channel.send(":x: | Command cancelled.");
@@ -46,11 +42,8 @@ module.exports = {
       roles = roles[0] || roles
       let count = 0;
       message.guild.members.cache.forEach(member => {
-        member.roles.cache.forEach(role => {
-          console.log(role.id === roles.id)
-          if (role.id === roles.id) count += 1
-        })
-      })
+        if (member.roles.cache.get(roles.id)) count++
+      }) 
       sendRoleEmbed(roles, count);
     }
     function sendRoleEmbed(role, count) {
