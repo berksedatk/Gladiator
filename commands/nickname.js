@@ -41,14 +41,7 @@ module.exports = {
         });
       multipleNickEmbed(menrole, nick, count)
     } else if (!user && !menrole && args[0] == "mass") {
-      args.shift();
-      let nick = args.join(" ");
-      let count = 0;
-      message.guild.members.cache.map(member => {
-        member.setNickname(nick, "Requested by " + message.author.tag);
-          count += 1;
-      })
-      allNickEmbed(nick, count);
+      return message.channel.send("Mass nickname command is disabled until further notice. Sorry :p")
     } else {
       return message.channel.send(":x: | You didn't provide a true operation.");
     }
