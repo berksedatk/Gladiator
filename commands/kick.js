@@ -12,6 +12,9 @@ module.exports = {
   guildOnly: "true",
   reqPermissions: ["KICK_MEMBERS"],
   execute(bot, message, args) {
+    
+    if (!args[0]) return message.channel.send(":x: | You need to provide a user to kick.")
+    
     const user = message.mentions.users.first() ? message.mentions.users.first() 
     : (bot.users.cache.get(args[0]) ? bot.users.cache.get(args[0])
     : (bot.users.cache.filter(user => user.username.toLowerCase().includes(args[0].toLowerCase())).first() ? bot.users.cache.filter(user => user.username.toLowerCase().includes(args[0].toLowerCase())).first()
