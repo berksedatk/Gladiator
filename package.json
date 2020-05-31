@@ -1,0 +1,25 @@
+{
+  "name": "gladiatorbeta",
+  "version": "1.0.0",
+  "description": "A bot.",
+  "main": "index.js",
+  "dependencies": {
+    "fs": "^0.0.2",
+    "express": "^4.17.1",
+    "hastebin-gen": "^2.0.5",
+    "mongoose": "^5.9.16",
+    "canvas": "^2.6.1",
+    "ms": "^2.1.2",
+    "discord.js": "^12.2.0",
+    "pretty-ms": "^7.0.0",
+    "dblapi.js": "^2.4.0"
+  },
+  "engines": {
+    "node": "12.x"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Sax#6211",
+  "license": "ISC"
+}

@@ -1,0 +1,13 @@
+{
+	"version": "beta",
+	"prefixes": ["gb!", "gladibeta ", "gladiatorbeta "],
+	"devs": ["495248175808905226"],
+  "channels": {
+    "joinChannel": "673869397277933653",
+    "joinChannelOld": "626060601172426754",
+    "voteChannel": "673867340810551342",
+    "voteChannelOld": "622181001380233236",
+    "changeLogs": "673869350108659743",
+    "actionLog": "714846415662088283"
+  }
+}
