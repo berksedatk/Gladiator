@@ -48,12 +48,9 @@ module.exports = {
       } else {
         parentName = bot.channels.cache.get(channel.parentID).name;
       }
-      let topic = channel.topic == null ? "Empty" : channel.topic
-      sendChannelEmbed(channel, parentName, topic);
+      sendChannelEmbed(channel, parentName);
     }
-    
-    
-    
+
     function sendChannelEmbed(channel, parentName) {
       const channelEmbed = new Discord.MessageEmbed()
         .setTitle(`**${channel.name}**`)
@@ -65,7 +62,7 @@ module.exports = {
         .addField("Nsfw", channel.nsfw, true)
         .addField("Id", `\`${channel.id}\``, true)
         .addField("Category", parentName + `(\`${channel.parentID}\`)`, true)
-        .addField("Topic", channel.topic === null ? "Nothing" : channel.topic);       
+        .addField("Topic", channel.topic === null ? "No Topic" : channel.topic);       
       return message.channel.send(channelEmbed);
     }
   }
