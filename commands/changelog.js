@@ -15,7 +15,7 @@ module.exports = {
       .setTimestamp()
       .setFooter("Created by Sax#6211");
 
-    bot.channels.cache.get(config.changeLogs).send(logEmbed);
+    bot.channels.cache.get(config.channels.changeLogs).send(logEmbed);
     message.delete();
   }
 };
