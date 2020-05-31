@@ -1,6 +1,6 @@
 {
-	"version": "beta",
-	"prefixes": ["gb!", "gladibeta ", "gladiatorbeta "],
+	"version": "0.8.0",
+	"prefixes": ["g!", "gladi ", "gladiator "],
 	"devs": ["495248175808905226"],
   "channels": {
     "joinChannel": "673869397277933653",
