@@ -49,9 +49,7 @@ module.exports = {
             casesEmbed.setFooter(`Page of 1/${pages + 1} - Requested by ${message.author.tag}`, message.author.avatarURL())
           }
         } else {
-          list.forEach(Case => {
-            casesEmbed.addField(Case.title, Case.field) 
-          })
+          list < 1 ? casesEmbed.setDescription(" - No recorded cases.") : list.forEach(Case => casesEmbed.addField(Case.title, Case.field))
           casesEmbed.setFooter(`Page of 1/1 - Requested by ${message.author.tag}`, message.author.avatarURL())
         }
         message.channel.send(casesEmbed)
