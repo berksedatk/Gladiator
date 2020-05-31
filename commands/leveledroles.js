@@ -148,6 +148,7 @@ module.exports = {
             if (!xp) return message.channel.send(":x: | You need to provide a xp.");
             
             let role = guild.xproles.get(xp)
+            if (!role) return message.channel.send(":x: | This xp does not have any roles set.");
 
             guild.xproles.set(xp, undefined)
             await guild.save().then(() => message.channel.send({embed: {description: `:white_check_mark: | <@&${role}> has been removed from the \`${xp}xp\`.`}})).catch(err => message.channel.send(`An error occured: ${err}`))
