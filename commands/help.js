@@ -65,7 +65,7 @@ module.exports = {
         .setColor("#fcffff")
         .setTimestamp()
         .setFooter("Requested by " + message.author.tag, message.author.avatarURL())
-        .setDescription("The usage in <> is required, the usage in [] is optional.")
+        .setDescription("The usage in <> is required, [] is optional.")
 
       if (command.aliases) helpEmbed.addField("**Aliases:**", command.aliases.join(', '));
       if (command.category) helpEmbed.addField("**Category:**", command.category)
