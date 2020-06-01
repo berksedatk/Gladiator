@@ -10,6 +10,7 @@ module.exports = {
   cooldown: 5,
   guildOnly: true,
   execute(bot, message, args, db) {
+    if (!args[0]) return message.channel.send(":x: | You didn't provide a case ID.")
     const caseNumber = args[0]
     args.shift()
     const updated = args.join(" ")
