@@ -102,7 +102,6 @@ module.exports = {
         role = role[0]  || role
       }
       
-      if (!role.editable) return message.channel.send(":x: | I can't manage this role. Sorry.");
       if (!message.guild.members.cache.get(user.id).roles.cache.has(role.id)) return message.channel.send(":x: | This user doesn't have that role.");
       if (message.member.roles.highest.position <= message.guild.roles.cache.find(grole => grole.name.toLowerCase() == role.name.toLowerCase()).position && message.guild.owner.id != message.author.id) return message.channel.send(":x: | You can't manage this role.");
       if (message.guild.members.cache.get(user.id).roles.highest.position > message.guild.members.cache.get(message.author.id).roles.highest.position && message.guild.owner.id != message.author.id) return message.channel.send(":x: | You can't manage this user.");
