@@ -11,7 +11,8 @@ module.exports = {
   cooldown: 5,
   guildOnly: true,
   reqPermissions: ['MANAGE_MESSAGES'],
-  execute(bot, message, args, db) { 
+  execute(bot, message, args, db) {
+    if (!args[0]) return message.channel.send(":x: | You have to provide a user to warn.")
     const user = message.mentions.users.first() ? message.mentions.users.first() 
     : (bot.users.cache.get(args[0]) ? bot.users.cache.get(args[0])
     : (bot.users.cache.filter(user => user.username.toLowerCase().includes(args[0].toLowerCase())).first() ? bot.users.cache.filter(user => user.username.toLowerCase().includes(args[0].toLowerCase())).first()
