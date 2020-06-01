@@ -110,7 +110,7 @@ module.exports = {
           user: user.tag,
           guildID: message.guild.id,
           guild: message.guild.name,
-          time: time + Date.now(),
+          time: time != null ? time + Date.now() : null,
           role: mutedrole.id
         })
         
