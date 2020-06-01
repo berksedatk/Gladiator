@@ -35,8 +35,10 @@ module.exports = {
           join: {
             role: null,
             botrole: null,
+            autorole: false,
             channel: "default",
-            message: false
+            message: "Welcome to my server!",
+            send: false
           },
           levelup: {
             message: "default",
