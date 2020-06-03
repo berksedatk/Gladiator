@@ -9,7 +9,7 @@ module.exports = {
   dev: true,
   unstaged: true,
   guildOnly: true,
-  execute(bot, message, args, db) {
+  execute(bot, message, args) {
     Guild.findOne({ guildID: message.guild.id }, (err, guild) => {
       
       if (err) return message.channel.send(`An error occured: ${err}`);
