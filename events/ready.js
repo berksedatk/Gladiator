@@ -4,16 +4,16 @@ const mongoose = require("mongoose");
 
 module.exports = {
   execute(bot) {
-    
+
     //Discord
     console.log("---------------------------------------------")
     console.log("Bot is online.")
     console.log(`Discord Client: ${bot.user.tag} \nServer count: ${bot.guilds.cache.size} \nUser count: ${bot.users.cache.size}`);
-  
+
     bot.user.setActivity(`with Beta tools. | gb!help`, {
       type: "PLAYING"
     });
-  
+
     let number = 0;
     setInterval(function() {
       if (number == 0) {
@@ -28,23 +28,27 @@ module.exports = {
         number = 0;
       }
     }, 30000)
-    
+
     setInterval(function() {
       Mute.find({}, (err, mutes) => {
         mutes.forEach(mute => {
           if (mute.time != undefined && Date.now() > mute.time) {
             mute.delete().then(() => {
-              bot.guilds.cache.get(mute.guildID).members.cache.get(mute.userID).roles.remove(mute.role)
+              try {
+                bot.guilds.cache.get(mute.guildID).members.cache.get(mute.userID).roles.remove(mute.role)
+              } catch(err) {
+                console.log(`Could not remove the mute! ${bot.guilds.cache.get(mute.guildID).name} -> ${bot.guilds.cache.get(mute.guildID).members.cache.get(mute.userID).user.tag}`)
+              }
             })
           }
         })
       })
     }, 5000)
-    
+
     Guild.find({}, (err, guilds) => {
       guilds.forEach(guild => {
         if (guild.reactionroles) {
-          guild.reactionroles.forEach((messages, channel) => {      
+          guild.reactionroles.forEach((messages, channel) => {
             Object.keys(messages).forEach(message => {
               let messageids = Object.keys(guild.reactionroles.get(channel))
               messageids.forEach(async messageid => {
