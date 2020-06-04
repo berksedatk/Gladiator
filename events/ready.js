@@ -17,7 +17,7 @@ module.exports = {
     let number = 0;
     setInterval(function() {
       if (number == 0) {
-        bot.user.setActivity(`Dolphins | g!help`, {
+        bot.user.setActivity(`with Dolphins | g!help`, {
           type: "PLAYING"
         });
         number = 1;
