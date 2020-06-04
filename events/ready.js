@@ -17,13 +17,13 @@ module.exports = {
     let number = 0;
     setInterval(function() {
       if (number == 0) {
-        bot.user.setActivity(`with Bugs. | gb!help`, {
+        bot.user.setActivity(`Dolphins | g!help`, {
           type: "PLAYING"
         });
         number = 1;
       } else {
-        bot.user.setActivity(`with Beta tools. | gb!help`, {
-          type: "PLAYING"
+        bot.user.setActivity(`a sitcom. | g!help`, {
+          type: "WATCHING"
         });
         number = 0;
       }
