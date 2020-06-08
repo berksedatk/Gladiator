@@ -32,7 +32,7 @@ module.exports = {
             guildName: message.guild.name,
             guildID: message.guild.id,
             blacklisted: false,
-            settings: {     
+            settings: {
               join: {
                 role: null,
                 botrole: null,
@@ -61,39 +61,39 @@ module.exports = {
         } else if (guild) {
           //Blacklist
           if (guild.settings.blacklist.enabled && guild.settings.blacklist.list.includes(message.channel.id)) return blacklisted = true;
-          
+
           //XP
           const xp = Math.floor(Math.random() * 100) + 1;
-          if (guild.members.get(message.author.id)) {            
+          if (guild.members.get(message.author.id)) {
             const member = guild.members.get(message.author.id)
             //Giving xp
             if ((message.createdTimestamp - member.lastxpmessage) > 30000) {
-            
+
               //Amount
               let rawxp = member.xp + xp;
               const multiplier = 560 * (member.level + 1);
-              
+
               //Xp reward
               if (guild.xproles.size > 0) {
 
                 const lastxp = member.xp + factorial(member.level) * 560
-                
+
                 let xproles = []
                 guild.xproles.forEach((role, xp) => {
                   xproles.push({role: role, xp: xp})
                 })
-                
+
                 xproles.sort((a, b) => b.xp - a.xp)
-                
+
                 while (xproles.length != 0) {
                   if (xproles[0].xp < lastxp) {
                     //Add xp role
                     const xprole = xproles.shift()
-                    
+
                     let xpmessage = `${message.author} You reached \`${xprole.xp}\` xp and you have been rewarded with <@&${xprole.role}> role!`
-                    
+
                     if (!message.guild.members.cache.get(message.author.id).roles.cache.has(xprole.role)) {
-                      
+
                       message.guild.members.cache.get(message.author.id).roles.add(xprole.role).then(() => {
                         if (guild.settings.levelup.send) {
                           guild.settings.levelup.channel === "default" ? message.channel.send({embed: {description: xpmessage }}) : bot.channels.cache.get(guild.settings.levelup.channel).send({embed: {description: xpmessage }});
@@ -101,32 +101,32 @@ module.exports = {
                       }).catch(() => {
                         return message.channel.send(`Could not reward the user because role with the id ${xprole.role} was removed from the server, please contract a server manager to remove the xp role from list via \`g!leveledroles xp remove ${xprole.xp}\` command.`)
                       })
-                      
+
                     }
-                    
+
                     break;
                   } else {
                     xproles.shift()
                   }
                 }
-                
+
               }
-              
+
               //Level up
               if (rawxp > multiplier) {
               let levelupmessage = `${message.author} You leveled up! Now you're level ${member.level + 1}`;
-              
+
                 //Level Roles
                 if (guild.levelroles.get(member.level + 1)) {
                   message.guild.members.cache.get(message.author.id).roles.add(guild.levelroles.get(member.level + 1));
                   levelupmessage += `\nYou have been rewarded with the role <@&${guild.levelroles.get(member.level + 1)}>!`;
                 }
-              
+
                 //Sending message
                 if (guild.settings.levelup.send) {
                   guild.settings.levelup.channel === "default" ? message.reply({embed: {description: levelupmessage }}) : bot.channels.cache.get(guild.settings.levelup.channel).send(`${message.author}`,{embed: {description: levelupmessage }});
                 }
-                
+
                 guild.members.set(message.author.id, {
                   username: message.author.tag,
                   id: message.author.id,
@@ -148,7 +148,7 @@ module.exports = {
                   mode: member.mode
                 })
                 await guild.save().catch(err => message.channel.send(`An error occured: ${err}`));
-              }        
+              }
             }
           } else {
             guild.members.set(message.author.id, {
@@ -165,7 +165,7 @@ module.exports = {
         }
       });
     }
-    
+
     if (blacklisted === true) return;
 
     //Command
@@ -176,16 +176,16 @@ module.exports = {
       if (message.content.toLowerCase().startsWith(thisPrefix)) prefix = thisPrefix;
     }
     if (!prefix || message.author.bot) return;
-  
+
     //Arguments
     const args = message.content.slice(prefix.length).split(/ +/);
     const commandName = args.shift().toLowerCase();
-  
+
     //Command defining
     const command = bot.commands.get(commandName) || bot.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
     if (!command) return;
-    
+
     if (command.dev && !config.devs.includes(message.author.id)) {
     return message.channel.send(":x: | You are not accesed to use this command!")
     }
@@ -193,10 +193,15 @@ module.exports = {
       return message.reply(':x: | This command cannot be executed in direct messages.');
     }
     if (command.reqPermissions) {
-      if (!message.guild.members.cache.get(message.author.id).permissions.has(command.reqPermissions))
-      return message.channel.send(":x: | You are not accesed to use this command! Missing permission: " + command.reqPermissions); 
+      let missing = []
+      command.reqPermissions.forEach(permission => {
+        if (!message.guild.members.cache.get(message.author.id).permissions.has(permission)) missing.push(`${permission[0] + permission.replace("_", " ").toLowerCase().substr(1)}`)
+      })
+      if (missing.length > 0) {
+        return message.channel.send(":x: | You are not accesed to use this command! Missing permission(s): " + missing.join(', '));
+      }
     }
-    
+
     //Cooldowns
     if (!cooldowns.has(command.name)) {
     cooldowns.set(command.name, new Discord.Collection());
@@ -220,7 +225,7 @@ module.exports = {
       timestamps.set(message.author.id, now);
       setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
       }
-    
+
     //Executing
     try {
       command.execute(bot, message, args, db, dbl);
