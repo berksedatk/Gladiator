@@ -8,35 +8,46 @@ module.exports = {
   aliases: ['ui'],
   cooldown: 5,
   guildOnly: true,
-  execute(bot, message, args) {
-    let member
-    if (!args[0]) {
-      member = message.author
-    } else {
-      member = message.mentions.users.first() ? message.mentions.users.first() 
+  async execute(bot, message, args) {
+
+    if (!args[0]) return message.channel.send(":x: | You didn't provided a user.");
+    let user = message.mentions.users.first() ? message.mentions.users.first()
       : (message.guild.members.cache.get(args[0]) ? message.guild.members.cache.get(args[0])
-      : (message.guild.members.cache.filter(user => user.user.username.toLowerCase().includes(args[0].toLowerCase())).first() ? message.guild.members.cache.filter(user => user.user.username.toLowerCase().includes(args[0].toLowerCase())).first()
-      : null))
-      if (member === null) return message.channel.send(":x: | This user does not exist.");
+      : (message.guild.members.cache.filter(u => u.user.username.toLowerCase().includes(args[0].toLowerCase())).size > 0 ? message.guild.members.cache.filter(u => u.user.username.toLowerCase().includes(args[0].toLowerCase())).array()
+      : undefined))
+    if (!user) return message.channel.send(":x: | You didn't provide a true user.");
+
+    if (user.length > 1) {
+      let usermsg = "";
+        for (let i = 0; i < (user.length > 10 ? 10 : user.length); i++) {
+      usermsg += `\n${i + 1} -> ${user[i].user.username}`;
+      }
+
+      let msg = await message.channel.send("", {embed: {description: `**There are multiple users found with name '${args[0]}', which one would you like to use?** \n${usermsg}`, footer: {text: "You have 30 seconds to respond."}, timestamp: Date.now()}});
+      let collected = await message.channel.awaitMessages(m => m.author.id === message.author.id, { max: 1, time: 30000, errors: ['time'] })
+      if (Number(collected.first().content) > user.length) return message.channel.send(":x: | Invalid user number. Command cancelled.");
+      user = user[collected.first().content - 1]
+      msg.delete()
+    } else {
+      user = user[0] || message.guild.members.cache.get(user.id)
     }
-    member = message.guild.members.cache.get(member.id)
-    console.log(member)
+
     let presenceMes;
-    if (member.presence.activities[0]) {   
-      if (member.presence.activities[0].type == "PLAYING") {
-        presenceMes = `Playing **${member.presence.activities[0].name}**`;
-      } else if (member.presence.activities[0].type == "STREAMING") {
-        presenceMes = `Streaming **${member.presence.activities[0].name}**`;
-      } else if (member.presence.activities[0].type == "LISTENING") {
-        presenceMes = `Listening **${member.presence.activities[0].name}**`;
-      } else if (member.presence.activities[0].type == "WATCHING") {
-        presenceMes = `Watching **${member.presence.activities[0].name}**`;
-      } else if (member.presence.activities[0].type == "CUSTOM_STATUS") {
-        if (member.presence.activities[0].emoji == null) {
-          presenceMes = `Custom Status **${member.presence.activities[0].state}**`;
+    if (user.presence.activities[0]) {
+      if (user.presence.activities[0].type == "PLAYING") {
+        presenceMes = `Playing **${user.presence.activities[0].name}**`;
+      } else if (user.presence.activities[0].type == "STREAMING") {
+        presenceMes = `Streaming **${user.presence.activities[0].name}**`;
+      } else if (user.presence.activities[0].type == "LISTENING") {
+        presenceMes = `Listening **${user.presence.activities[0].name}**`;
+      } else if (user.presence.activities[0].type == "WATCHING") {
+        presenceMes = `Watching **${user.presence.activities[0].name}**`;
+      } else if (user.presence.activities[0].type == "CUSTOM_STATUS") {
+        if (user.presence.activities[0].emoji == null) {
+          presenceMes = `Custom Status **${user.presence.activities[0].state}**`;
         } else  {
-          presenceMes = `Custom Status ${member.presence.activities[0].emoji} **${member.presence.activities[0].state}**`;
-        }      
+          presenceMes = `Custom Status ${user.presence.activities[0].emoji} **${user.presence.activities[0].state}**`;
+        }
       } else {
         presenceMes = 'Something is wrong... Pls contract support';
       }
@@ -44,16 +55,16 @@ module.exports = {
       presenceMes = 'Nothing';
     }
     let joinposition;
-    
+
     let arr = message.guild.members.cache.array();
     arr.sort((a, b) => a.joinedAt - b.joinedAt);
 
     for (let i = 0; i < arr.length; i++) {
-      if (arr[i].id == member.id) joinposition = i;
+      if (arr[i].id == user.id) joinposition = i;
     }
 
     let platforms = "";
-    let plat = member.presence.clientStatus;
+    let plat = user.presence.clientStatus;
     if (plat == null || JSON.stringify(plat) == "{}") {
       platforms += "Offline";
     } else {
@@ -67,37 +78,33 @@ module.exports = {
         platforms += `Desktop: ${plat.desktop}\n`;
       }
     }
-    
-    let roles = `<@&${member._roles.join(">, <@&")}>`; 
+
+    let roles = `<@&${user._roles.join(">, <@&")}>`;
     if (roles.length > 1024) {
       roles = "Too many roles!"; //roles.slice(-(1024 - roles.length))
     }
 
     let content;
-    if (member.lastMessage === null) {
+    if (user.lastMessage === null) {
       content = "Nothing";
     } else {
-      content = `> ${member.lastMessage}(${member.lastMessageID})`;
+      content = `> ${user.lastMessage}(${user.lastMessageID})`;
     }
-    sendUserinfoEmbed(member);
-
-    function sendUserinfoEmbed(member) {
-      const userinfoEmbed = new Discord.MessageEmbed()
-        .setAuthor(member.user.tag, member.user.avatarURL())
-        .setDescription(`User ID: ${member.id}`)
-        .setTimestamp()
-        .setColor(member.displayColor)
-        .setFooter("Requested by " + message.author.username, message.author.avatarURL())
-        .setThumbnail(member.user.avatarURL)
-        .addField("Discord Join Date", member.user.createdAt)
-        .addField("Guild Join Date", member.joinedAt, true)
-        .addField("Join Position",`${joinposition + 1}.`, true)
-        .addField("Nickname", member.nickname ? member.nickname : "Nothing")
-        .addField("Status", platforms, true)
-        .addField("Presence", presenceMes, true)
-        .addField("Last Message", content)    
-        .addField("Roles", roles);
-      message.channel.send(userinfoEmbed);
-    }
+    const userinfoEmbed = new Discord.MessageEmbed()
+      .setAuthor(user.user.tag, user.user.avatarURL())
+      .setDescription(`User ID: ${user.id}`)
+      .setTimestamp()
+      .setColor(user.displayColor)
+      .setFooter("Requested by " + message.author.username, message.author.avatarURL())
+      .setThumbnail(user.user.avatarURL)
+      .addField("Discord Join Date", user.user.createdAt)
+      .addField("Guild Join Date", user.joinedAt, true)
+      .addField("Join Position",`${joinposition + 1}.`, true)
+      .addField("Nickname", user.nickname ? user.nickname : "Nothing")
+      .addField("Status", platforms, true)
+      .addField("Presence", presenceMes, true)
+      .addField("Last Message", content)
+      .addField("Roles", roles);
+    message.channel.send(userinfoEmbed);
   }
 };
