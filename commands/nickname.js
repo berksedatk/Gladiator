@@ -11,7 +11,7 @@ module.exports = {
   reqPermissions: ["MANAGE_NICKNAMES"],
   async execute(bot, message, args) {
 
-    if (!args[0]) return message.channel.send(":x: | You didn't provided a user or a role.");
+    if (!args[0]) return message.channel.send(":x: | You didn't provide a user or a role.");
 
     //User
     let user = message.mentions.users.first() ? message.mentions.users.first()

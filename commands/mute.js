@@ -15,7 +15,7 @@ module.exports = {
   reqPermissions: ['KICK_MEMBERS'],
   async execute(bot, message, args) {
 
-    if (!args[0]) return message.channel.send(":x: | You didn't provided a user.");
+    if (!args[0]) return message.channel.send(":x: | You didn't provide a user.");
     let user = message.mentions.users.first() ? message.mentions.users.first()
       : (message.guild.members.cache.get(args[0]) ? message.guild.members.cache.get(args[0])
       : (message.guild.members.cache.filter(u => u.user.username.toLowerCase().includes(args[0].toLowerCase())).size > 0 ? message.guild.members.cache.filter(u => u.user.username.toLowerCase().includes(args[0].toLowerCase())).array()
