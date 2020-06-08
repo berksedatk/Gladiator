@@ -11,7 +11,7 @@ module.exports = {
   usage: "<case id>",
   cooldown: 5,
   guildOnly: true,
-  reqPermissions: ['MANAGE_GUILD'],
+  reqPermissions: ['MANAGE_MESSAGES'],
   execute(bot, message, args, db) {
     const caseNumber = args[0]
     Guild.findOne({ guildID: message.guild.id }, (err, guild) => {
@@ -22,7 +22,7 @@ module.exports = {
         if (!cases) return message.channel.send(":x: | This case does not exist!")
         let casemsg = `**Issued by:** <@${cases.by.id}>(${cases.by.id}) \n**Case ID:** #${caseNumber} \n**Action:** ${cases.action} \n**Reason:** ${cases.reason}`
         cases.action === "mute" ? (cases.length === null ? casemsg += `\n**Muted for:** No time was provided.` : casemsg += `\n**Muted for:** ${prettyms(cases.length, {verbose: true})}`) : false
-        
+
         sendEmbed(cases, casemsg)
         message.channel.send(`The case with the ID \`#${caseNumber}\` will be removed, are you sure? \`yes, no\``).then(() => {
           message.channel.awaitMessages(m => m.author.id === message.author.id, { max: 1, time: 15000, errors:["time"] }).then(collected => {
@@ -36,7 +36,7 @@ module.exports = {
         })
       }
     })
-    
+
     function sendEmbed(cases, casemsg) {
       const warnEmbed = new Discord.MessageEmbed()
       .setTimestamp()

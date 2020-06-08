@@ -9,6 +9,7 @@ module.exports = {
   usage: "<case number>",
   cooldown: 5,
   guildOnly: true,
+  reqPermissions: ['MANAGE_MESSAGES'],
   execute(bot, message, args, db) {
     if (!args[0]) return message.channel.send(":x: | You didn't provide a case ID.")
     const caseNumber = args[0]
@@ -21,7 +22,7 @@ module.exports = {
       if (guild) {
         const cases = guild.cases.get(caseNumber) ? guild.cases.get(caseNumber) : false
         if (!cases) return message.channel.send(":x: | This case does not exist!")
-        
+
         guild.cases.set(caseNumber, {
           user: {
             tag: cases.user.tag,
@@ -41,7 +42,7 @@ module.exports = {
         sendEmbed(cases)
       }
     })
-    
+
     function sendEmbed(cases) {
       const warnEmbed = new Discord.MessageEmbed()
       .setTimestamp()
@@ -51,7 +52,7 @@ module.exports = {
       .addField("Case by", `<@${cases.by.id}>`)
       .addField("Case", `#${caseNumber}`, true)
       .addField("Action", cases.action, true)
-      .addField("Reason", args.join(" "));    
+      .addField("Reason", args.join(" "));
       return message.channel.send(warnEmbed);
     }
   }
