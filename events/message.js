@@ -7,6 +7,10 @@ const cooldowns = new Discord.Collection();
 const Guild = require("../schemas/guild.js");
 const mongoose = require("mongoose");
 
+function prettyString(string) {
+ return string.replace(/_/g, " ").replace(/guild/gi, "Server").replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();})
+}
+
 function factorial(num) {
   if (num === 0) {
     return 0;
@@ -195,7 +199,7 @@ module.exports = {
     if (command.reqPermissions) {
       let missing = []
       command.reqPermissions.forEach(permission => {
-        if (!message.guild.members.cache.get(message.author.id).permissions.has(permission)) missing.push(`${permission[0] + permission.replace("_", " ").toLowerCase().substr(1)}`)
+        if (!message.guild.members.cache.get(message.author.id).permissions.has(permission)) missing.push(prettyString(permission))
       })
       if (missing.length > 0) {
         return message.channel.send(":x: | You are not accesed to use this command! Missing permission(s): " + missing.join(', '));

@@ -4,6 +4,10 @@ function colorToHexString(dColor) {
     return '#' + ("000000" + (((dColor & 0xFF) << 16) + (dColor & 0xFF00) + ((dColor >> 16) & 0xFF)).toString(16)).slice(-6);
 }
 
+function prettyString(string) {
+ return string.replace(/_/g, " ").replace(/guild/gi, "Server").replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();})
+}
+
 module.exports = {
   name: "roleinfo",
   category: "Utility",
@@ -39,8 +43,8 @@ module.exports = {
           if (member.roles.cache.get(role.id)) count++
         })
         let perms = []
-        role.permissions.toArray().forEach(feature => {
-          perms.push(feature[0] + feature.replace("_", " ").toLowerCase().substr(1))
+        role.permissions.toArray().forEach(perm => {
+          perms.push(prettyString(perm))
         })
         sendRoleEmbed(role, count, perms);
     } else {
@@ -50,8 +54,8 @@ module.exports = {
         if (member.roles.cache.get(role.id)) count++
       })
       let perms = []
-      role.permissions.toArray().forEach(feature => {
-        perms.push(feature[0] + feature.replace("_", " ").toLowerCase().substr(1))
+      role.permissions.toArray().forEach(perm => {
+        perms.push(prettyString(perm))
       })
       sendRoleEmbed(role, count, perms);
     }
