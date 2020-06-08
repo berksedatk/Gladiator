@@ -35,7 +35,7 @@ module.exports = {
   cooldown: 5,
   execute(bot, message, args, db) {
     let user;
-    Guild.findOne({ guildID: message.guild.id }, (err, guild) => {
+    Guild.findOne({ guildID: message.guild.id }, async (err, guild) => {
       if (err) return message.channel.send(`An error occured: ${err}`);
       if (!guild) return message.channel.send("There was an error while fetching server database, please contact a bot dev! (https://discord.gg/tkR2nTf)")
       if (guild) {
@@ -49,7 +49,7 @@ module.exports = {
               if (!args[2]) return message.channel.send("You must provide a color, the color can be chosen from the list below or you can use a hex code.\n" +colors.join(", "));
               if (!colors.includes(args[2].toLowerCase()) && /^#[0-9A-F]{6}$/i.test(args[2]) === false) return message.channel.send("You must pick a color from list or use a hex code which includes 6 letters(ex. #A1B2C3).\n" +colors.join(", "));
               let color = args[2];
-              
+
               guild.members.set(message.author.id, {
                 username: guild.members.get(message.author.id).username,
                 id: guild.members.get(message.author.id).id,
@@ -62,7 +62,7 @@ module.exports = {
               guild.save().then(() => message.channel.send({embed: {description:`Color of your profile has been changed successfully.`, color: args[2]}})).catch(err => message.channel.send(`An error occured: ${err}`))
             } else if (args[1].toLowerCase() === "lightmode") {
               //Light mode
-              
+
               guild.members.set(message.author.id, {
                 username: guild.members.get(message.author.id).username,
                 id: guild.members.get(message.author.id).id,
@@ -75,7 +75,7 @@ module.exports = {
               guild.save().then(() => message.channel.send('Successfully switched to the lightmode.')).catch(err => message.channel.send(`An error occured: ${err}`))
             } else if (args[1].toLowerCase() === "darkmode") {
               //Dark mode
-              
+
               guild.members.set(message.author.id, {
                 username: guild.members.get(message.author.id).username,
                 id: guild.members.get(message.author.id).id,
@@ -92,12 +92,29 @@ module.exports = {
             }
           } else {
             //Send user's profile
-            user = message.mentions.users.first() ? message.mentions.users.first() 
-            : (bot.users.cache.get(args[0]) ? bot.users.cache.get(args[0])
-            : (bot.users.cache.filter(user => user.username.toLowerCase().includes(args[0].toLowerCase())).first() ? bot.users.cache.filter(user => user.username.toLowerCase().includes(args[0].toLowerCase())).first()
-            : null))
-            
-            if (user === null) return message.channel.send(":x: | You didn't provide a true user.");
+            if (!args[0]) return message.channel.send(":x: | You didn't provided a user.");
+            let user = message.mentions.users.first() ? message.mentions.users.first()
+              : (message.guild.members.cache.get(args[0]) ? message.guild.members.cache.get(args[0])
+              : (message.guild.members.cache.filter(u => u.user.username.toLowerCase().includes(args[0].toLowerCase())).size > 0 ? message.guild.members.cache.filter(u => u.user.username.toLowerCase().includes(args[0].toLowerCase())).array()
+              : undefined))
+            if (!user) return message.channel.send(":x: | You didn't provide a true user.");
+
+            if (user.length > 1) {
+              let usermsg = "";
+                for (let i = 0; i < (user.length > 10 ? 10 : user.length); i++) {
+              usermsg += `\n${i + 1} -> ${user[i].user.username}`;
+                }
+
+              let msg = await message.channel.send("", {embed: {description: `**There are multiple users found with name '${args[0]}', which one would you like to use?** \n${usermsg}`, footer: {text: "You have 30 seconds to respond."}, timestamp: Date.now()}});
+              let collected = await message.channel.awaitMessages(m => m.author.id === message.author.id, { max: 1, time: 30000 })
+              if (!collected.first()) return message.channel.send(":x: | Command timed out.")
+              if (Number(collected.first().content) > user.length) return message.channel.send(":x: | Invalid user number. Command cancelled.");
+              user = user[collected.first().content - 1]
+              msg.delete()
+            } else {
+              user = user[0] || user
+            }
+
             getUser(user, guild)
           }
         } else {
@@ -107,7 +124,7 @@ module.exports = {
         }
       }
     });
-    
+
     function getUser(user, guild) {
       if (user.bot) return message.channel.send(":x: | Bots doesn't has profiles. They are too metalic for that.");
       let xp;
@@ -136,7 +153,7 @@ module.exports = {
         color = "lightblue"
         mode = "dark"
         createCanvas(xp, level, color, mode)
-      }      
+      }
     }
 
     async function createCanvas(xp, level, color, mode) {
@@ -183,7 +200,7 @@ module.exports = {
       ctx.fillText(`Lvl ${level}`, 610, 200);
       ctx.fillText(message.guild.name, 615, 57);
       ctx.restore();
-      
+
       //Cuttings
       ctx.beginPath();
       ctx.arc(125, 125, 100, 0, Math.PI * 2);
@@ -206,11 +223,11 @@ module.exports = {
       //Load the photo
       const photo = await Canvas.loadImage(user.avatarURL({ format: "png" }));
       if (message.guild.iconURL() != null) {
-        const icon = await Canvas.loadImage(message.guild.iconURL({ format: "png" })); 
+        const icon = await Canvas.loadImage(message.guild.iconURL({ format: "png" }));
         ctx.drawImage(icon, 627, 27, 46, 46);
       }
-      
-      //Images    
+
+      //Images
       ctx.drawImage(photo, 25, 25, 200, 200);
 
       //Outlines
@@ -219,7 +236,7 @@ module.exports = {
       ctx.stroke();
 
       const attachment = new Discord.MessageAttachment(canvas.toBuffer(), "profile.png");
-      
+
       message.channel.send(attachment);
     }
   }

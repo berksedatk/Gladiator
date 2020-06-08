@@ -26,9 +26,9 @@ module.exports = {
             guild.levelroles.forEach((role, level) => {
               levelmsg.push(`\`${level}\` -> <@&${role}>`)
             })
-            
+
             if (levelmsg.length < 1) levelmsg.push("None")
-            
+
             const levelembed = new Discord.MessageEmbed()
             .setTimestamp()
             .setColor("#bc93ed")
@@ -40,50 +40,50 @@ module.exports = {
             //Add level roles
             if (!args[2]) return message.channel.send(":x: | You need to provide a level to add a role onto. Usage `g!leveledroles level add <level> <role>`");
             if (args[2] > 100 || args[2] < 1) return message.channel.send(":x: | I do not suggest you to use levels that are higher than 100 and below 1. Sorry.");
-            
+
             let role = message.mentions.roles.first() ? message.mentions.roles.first()
               : (message.guild.roles.cache.get(args[3]) ? message.guild.roles.cache.get(args[3])
               : (message.guild.roles.cache.filter(role => role.name.includes(args[3])).size >= 1 ? message.guild.roles.cache.filter(role => role.name.includes(args[3])).array()
               : null))
-            
-            if (role === null) return message.channel.send(":x: | You didn't provide a true role.");  
-            
+
+            if (role === null) return message.channel.send(":x: | You didn't provide a true role.");
+
             if (role.length > 1) {
               let rolemsg = "";
               for (let i = 0; i < role.length; i++) {
-                rolemsg += `\n${i + 1} - ${role[i].name}`
+                rolemsg += `\n${i + 1} - ${role[i]}`
               }
-              message.channel.send(`There are multiple roles found including '${args[3]}', which one would you like to use? ${rolemsg}`)
-              await message.channel.awaitMessages(m => m.author.id === message.author.id, { time: 15000, max: 1, errors:['time'] }).then(collected => {
-                if (Number(collected.first().content) > role.length) return message.channel.send(":x: | Invalid role number. Command cancelled.");
-                role = role[collected.first().content - 1]
-              }).catch(err => {
-                return message.channel.send(":x: | Command cancelled.")
-              });
+
+              let msg = await message.channel.send("", {embed: {description: `**There are multiple roles found with name '${args[0]}', which one would you like to use?** \n${rolemsg}`, footer: {text: "You have 30 seconds to respond."}, timestamp: Date.now()}});
+              let collected = await message.channel.awaitMessages(m => m.author.id === message.author.id, { time: 15000, max: 1 })
+              if (!collected.first()) return message.channel.send(":x: | Command timed out.");
+              if (Number(collected.first().content) > role.length) return message.channel.send(":x: | Invalid role number. Command cancelled.");
+              role = role[collected.first().content - 1]
+              msg.delete()
             } else {
               role = role[0] || role
             }
-            
+
             if (guild.levelroles.get(args[2])) {
               if (guild.levelroles.get(args[2]) === role.id) return message.channel.send(":x: | This role is already set up for this level.");
             } else {
               guild.levelroles.set(args[2], role.id)
             }
-            
+
             await guild.save().then(() => message.channel.send({embed: {description: `:white_check_mark: | ${role} has been set for level \`${args[2]}\` as a leveled role.`}})).catch(err => message.channel.send(`An error occured: ${err}`))
-                       
+
           } else if (args[1].toLowerCase() === "remove") {
             //Remove level roles
             let level = (args[2] <= 100 && args[2] > 0) ? args[2] : false
             if (!level) return message.channel.send(":x: | You need to provide a level.");
-            
+
             let role = guild.levelroles.get(level)
-            
+
             if (!role) return message.channel.send(":x: | This level does not have any roles set.");
-            
+
             guild.levelroles.set(level, undefined)
             await guild.save().then(() => message.channel.send({embed: {description: `:white_check_mark: | <@&${role}> has been removed from the level \`${level}\`.`}})).catch(err => message.channel.send(`An error occured: ${err}`))
-                
+
           } else {
             return message.channel.send(":x: | You didn't provide a true option. `add, remove`");
           }
@@ -96,9 +96,9 @@ module.exports = {
             guild.xproles.forEach((role, xp) => {
               xpmsg.push(`\`${xp}\` -> <@&${role}>`)
             })
-            
+
             if (xpmsg.length < 1) xpmsg.push("None")
-            
+
             const xpembed = new Discord.MessageEmbed()
             .setTimestamp()
             .setColor("#bc93ed")
@@ -110,49 +110,49 @@ module.exports = {
             //Add xp roles
             if (!args[2]) return message.channel.send(":x: | You need to provide a xp to add a role onto. Usage `g!leveledroles xp add <xp> <role>`");
             if (args[2] <= 100) return message.channel.send(":x: | I do not suggest you to use xp that is under 100. Sorry.");
-            
+
             let role = message.mentions.roles.first() ? message.mentions.roles.first()
               : (message.guild.roles.cache.get(args[3]) ? message.guild.roles.cache.get(args[3])
               : (message.guild.roles.cache.filter(role => role.name.includes(args[3])).size >= 1 ? message.guild.roles.cache.filter(role => role.name.includes(args[3])).array()
               : null))
-            
-            if (role === null) return message.channel.send(":x: | You didn't provide a true role.");  
-            
+
+            if (role === null) return message.channel.send(":x: | You didn't provide a true role.");
+
             if (role.length > 1) {
               let rolemsg = "";
               for (let i = 0; i < role.length; i++) {
-                rolemsg += `\n${i + 1} - ${role[i].name}`
+                rolemsg += `\n${i + 1} - ${role[i]}`
               }
-              message.channel.send(`There are multiple roles found including '${args[3]}', which one would you like to use? ${rolemsg}`)
-              await message.channel.awaitMessages(m => m.author.id === message.author.id, { time: 15000, max: 1, errors:['time'] }).then(collected => {
-                if (Number(collected.first().content) > role.length) return message.channel.send(":x: | Invalid role number. Command cancelled.");
-                role = role[collected.first().content - 1]
-              }).catch(err => {
-                return message.channel.send(":x: | Command cancelled.")
-              });
+
+              let msg = await message.channel.send("", {embed: {description: `**There are multiple roles found with name '${args[0]}', which one would you like to use?** \n${rolemsg}`, footer: {text: "You have 30 seconds to respond."}, timestamp: Date.now()}});
+              let collected = await message.channel.awaitMessages(m => m.author.id === message.author.id, { time: 15000, max: 1 })
+              if (!collected.first()) return message.channel.send(":x: | Command timed out.");
+              if (Number(collected.first().content) > role.length) return message.channel.send(":x: | Invalid role number. Command cancelled.");
+              role = role[collected.first().content - 1]
+              msg.delete()
             } else {
               role = role[0] || role
             }
-            
+
             if (guild.xproles.get(args[2])) {
               if (guild.xproles.get(args[2]) === role.id) return message.channel.send(":x: | This role is already set up for this xp.");
             } else {
               guild.xproles.set(args[2], role.id)
             }
-            
+
             await guild.save().then(() => message.channel.send({embed: {description: `:white_check_mark: | ${role} has been set for \`${args[2]}xp\` as a xp role.`}})).catch(err => message.channel.send(`An error occured: ${err}`))
 
           } else if (args[1].toLowerCase() === "remove") {
             //Remove xp roles
             let xp = Number(args[2]) ? args[2] : false
             if (!xp) return message.channel.send(":x: | You need to provide a xp.");
-            
+
             let role = guild.xproles.get(xp)
             if (!role) return message.channel.send(":x: | This xp does not have any roles set.");
 
             guild.xproles.set(xp, undefined)
             await guild.save().then(() => message.channel.send({embed: {description: `:white_check_mark: | <@&${role}> has been removed from the \`${xp}xp\`.`}})).catch(err => message.channel.send(`An error occured: ${err}`))
-            
+
           } else {
             return message.channel.send(":x: | You didn't provide a true option. `add, remove`");
           }
