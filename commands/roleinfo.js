@@ -39,14 +39,14 @@ module.exports = {
       role = role[collected.first().content - 1]
       msg.delete()
       let count = 0;
-        message.guild.members.cache.forEach(member => {
-          if (member.roles.cache.get(role.id)) count++
-        })
-        let perms = []
-        role.permissions.toArray().forEach(perm => {
-          perms.push(prettyString(perm))
-        })
-        sendRoleEmbed(role, count, perms);
+      message.guild.members.cache.forEach(member => {
+        if (member.roles.cache.get(role.id)) count++
+      })
+      let perms = []
+      role.permissions.toArray().forEach(perm => {
+        perms.push(prettyString(perm))
+      })
+      sendRoleEmbed(role, count, perms);
     } else {
       role = role[0] || role
       let count = 0;
@@ -73,7 +73,7 @@ module.exports = {
         .addField("Member Count", count, true)
         .addField("Bot role", String(role.managed)[0].toUpperCase() + String(role.managed).substr(1), true)
         .addField("Color(Hex) code", colorToHexString(role.color), true)
-        .addField("Permissions", `${perms.join(', ')}`, true);
+        .addField("Permissions", `${perms.length < 1 ? "None" : perms.join(', ')}`, true);
       message.channel.send(roleEmbed);
     }
   }
