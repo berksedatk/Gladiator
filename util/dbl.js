@@ -4,7 +4,7 @@ const DBL = require('dblapi.js');
 module.exports = async (bot, server) => {
   const dbl = new DBL(process.env.DBL_TOKEN, {
     webhookAuth: "homework",
-    webhookServer: server
+    webhookPort: process.env.PORT
   });
 
   dbl.webhook.on('ready', async hook => {
