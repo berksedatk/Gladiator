@@ -23,7 +23,7 @@ function factorial(num) {
 }
 
 module.exports = {
-  async execute(bot, message, dbl, db) {
+  async execute(bot, message, db) {
     let blacklisted = false;
     if (message.author.bot) return;
     //Database
@@ -232,7 +232,7 @@ module.exports = {
 
     //Executing
     try {
-      command.execute(bot, message, args, db, dbl);
+      command.execute(bot, message, args, db);
     } catch (err) {
       console.error(`Executing command error: ${err}`);
       message.channel.send(`Executing command error: ${err}`);

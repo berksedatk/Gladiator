@@ -13,7 +13,7 @@ module.exports = {
   aliases: ['eveal', 'execute'],
   usage: '<code>',
   dev: 'true',
-  async execute(bot, message, args, db, dbl) {
+  async execute(bot, message, args, db) {
 
     const msg = await message.channel.send(`Executing code...`);
 
@@ -21,17 +21,17 @@ module.exports = {
 
     try {
       let output = eval(code);
-      
+
       if (output instanceof Promise || (Boolean(output) && typeof output.then === "function" && typeof output.catch === "function")) output = await output;
       output = inspect(output, {
         depth: 0,
         maxArrayLength: null
       });
-      
+
       output = clean(output);
-      
+
       if (output.includes(bot.token)) return msg.edit("Not today.")
-      
+
       if (output.length < 1000) {
         const embed = new Discord.MessageEmbed()
           .addField("Input", `\`\`\`js\n${code}\`\`\``)
@@ -48,7 +48,7 @@ module.exports = {
           msg.edit("", embed);
         }).catch(err => {
           console.log("Hastebin error: " + err)
-        });       
+        });
       }
     } catch (e) {
       msg.edit(`Error \`\`\`js\n${e}\`\`\``);
