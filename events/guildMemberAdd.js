@@ -8,7 +8,7 @@ module.exports = {
       if (err) return console.log(`Could not add a new member to guild! ${err}`);
       if (!guild) return console.log(`Could not add a new member to guild, Database does not exist!`)
       if (guild) {
-        
+
         //Join msg
         if (guild.settings.join.send && !guildMember.user.bot) {
           if (guild.settings.join.channel === "default") {
@@ -18,11 +18,11 @@ module.exports = {
             guildMember.guild.channels.cache.get(guild.settings.join.channel).send(`${guildMember}, ${guild.settings.join.message}`)
           }
         }
-        
+
         //Autorole
         if (guild.settings.join.autorole) {
           if (guildMember.user.bot) {
-            
+
             let botrole = guildMember.guild.roles.cache.get(guild.settings.join.botrole)
             if (!botrole) return guildMember.guild.owner.send(`There is no Autorole has been set for your server **${guildMember.guildname}**! Please use \`g!settings join role <role>\` command and add a existing role.`);
             guildMember.roles.add(botrole, "Autorole").catch(err => {
@@ -30,26 +30,28 @@ module.exports = {
               guildMember.guild.owner.send(`There was an error while adding autorole to a bot! ${err}`);
             })
           } else {
-            
+
             let role = guildMember.guild.roles.cache.get(guild.settings.join.role)
             if (!role) return guildMember.guild.owner.send(`There is no Autorole has been set for your server **${guildMember.guildname}**! Please use \`g!settings join role <role>\` command and add a existing role.`);
             guildMember.roles.add(role, "Autorole").catch(err => {
               console.log(`An error occured(${guildMember.guild.name}): ${err}`);
               guildMember.guild.owner.send(`There was an error while adding autorole to a member! ${err}`);
             })
-            
-            guild.members.set(guildMember.id, {
-              username: guildMember.tag,
-              id: guildMember.id,
-              xp: 0,
-              level: 0,
-              lastxpmessage: null,
-              color: "lightblue",
-              mode: "dark"
-            })
+
+            if (!guild.members.get(guildMember.id)) {
+              guild.members.set(guildMember.id, {
+                username: guildMember.tag,
+                id: guildMember.id,
+                xp: 0,
+                level: 0,
+                lastxpmessage: null,
+                color: "lightblue",
+                mode: "dark"
+              })
+            }
             guild.save().catch(err => console.log(`An error occured while saving a user to a guild ${guildMember.guild.name}: ${err}`))
-          }          
-        }   
+          }
+        }
       }
     })
   }
