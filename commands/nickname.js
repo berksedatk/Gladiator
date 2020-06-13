@@ -33,7 +33,7 @@ module.exports = {
         user = user[collected.first().content - 1]
         msg.delete()
       } else {
-        user = user[0] || user
+        user = user[0] || message.guild.members.cache.get(user.id)
       }
     }
 
