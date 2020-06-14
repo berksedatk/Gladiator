@@ -25,7 +25,7 @@ function factorial(num) {
 module.exports = {
   async execute(bot, message, db) {
     let blacklisted = false;
-    if (message.author.bot) return;
+    if (message.author.bot || config.blacklisted.includes(message.guild.id)) return;
     //Database
     if (message.content.length < 500 && message.content.length > 10 && message.channel.type != "dm") {
       await Guild.findOne({ guildID: message.guild.id }, async (err, guild) => {

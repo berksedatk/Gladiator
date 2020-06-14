@@ -2,6 +2,7 @@
 	"version": "0.8.1",
 	"prefixes": ["g!", "gladi ", "gladiator "],
 	"devs": ["495248175808905226"],
+	"blacklisted": ["264445053596991498"],
   "channels": {
     "joinChannel": "673869397277933653",
     "joinChannelOld": "626060601172426754",

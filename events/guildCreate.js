@@ -1,22 +1,19 @@
-const Discord = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 const Guild = require("../schemas/guild.js");
 const mongoose = require("mongoose");
 
 module.exports = {
   execute(bot, guild, db) {
-  
-  //Message guild owner
-  bot.users.cache.get(guild.owner.id).send("Thanks for adding me to your server!").catch(err => console.log(err));
 
   //Send message to logging channel
-  const serverEmbed = new Discord.MessageEmbed()
-    .setTitle("**New server!**")
-    .setTimestamp()
-    .setColor("GREEN")
-    .setThumbnail(guild.iconURL())
-    .setFooter("New server count " + bot.guilds.cache.size, bot.user.avatarURL())
-    .addField(`**${guild.name}**(${guild.id})`, `-Owner: **${guild.owner.user.tag}**(${guild.owner.user.id}) \n-Member Count: **${guild.memberCount}** members`);
-  bot.channels.cache.get("626060601172426754").send(serverEmbed);
+  const serverEmbed = new MessageEmbed()
+  .setAuthor(guild.owner.user.tag, guild.owner.user.avatarURL())
+  .setTitle("New Server!")
+  .setColor("GREEN")
+  .setThumbnail(guild.iconURL())
+  .setTimestamp()
+  .setFooter(`New server count: ${bot.guilds.cache.size}`)
+  .setDescription(`Server Name: **${guild.name}**(${guild.id}) \nMember Count: **${guild.members.cache.size}** members.`)
   bot.channels.cache.get("673869397277933653").send(serverEmbed);
 
   Guild.findOne({ guildID: guild.id }, (err, dbGuild) => {
@@ -31,7 +28,7 @@ module.exports = {
         guildName: guild.name,
         guildID: guild.id,
         blacklisted: false,
-        settings: {     
+        settings: {
           join: {
             role: null,
             botrole: null,
