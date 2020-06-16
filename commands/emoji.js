@@ -20,7 +20,7 @@ module.exports = {
   category: "Utility",
   description: "Shows you the information about a emoji.",
   aliases: ["e"],
-  usage: "<emoji>",
+  usage: "<add - remove - (emoji)>",
   async execute(bot, message, args) {
     if (!args[0]) return message.channel.send(":x: | You didn't provide a option or emoji.")
 
