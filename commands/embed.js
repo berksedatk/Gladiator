@@ -31,6 +31,7 @@ module.exports = {
   reqPermissions: ['MANAGE_MESSAGES'],
   async execute(bot, message, args) {
       let author
+      let authoricon
       let footer
 
       //Startup
@@ -52,7 +53,7 @@ module.exports = {
       } else {
         if (collected.first().content.length > 256) return message.channel.send(":x: | Author name cannot exceed 256 characters. Command cancelled.");
         msg.edit(`So the Author name will be ${collected.first().content}, what would you want for author's icon. You need to upload a image or send a link can embed the image! \n\`skip\` for nothing, \`cancel\` for cancelling the creator.`);
-        let author = collected.first().content
+        author = collected.first().content
         embed.setAuthor(author)
         embedMsg.edit("", embed)
 
@@ -61,13 +62,27 @@ module.exports = {
         if (!collected.first()) return message.channel.send(":x: | Command timed out.");
         if (collected.first().content.toLowerCase() === "cancel") return message.channel.send(":x: | Command cancelled.");
         if (collected.first().content.toLowerCase() === "skip") {
-          msg.edit("The embed won't have a author icon then, let's move to the title, what you want title to be? \n`skip` for nothing, `cancel` for cancelling the creator.");
+          msg.edit("The embed won't have a author icon then, what should be the author URL? \n`skip` for nothing, `cancel` for cancelling the creator.");
         } else if (collected.first().attachments.first()) {
-          msg.edit(`Icon will be set to the image you sent, let's move to the title, what you want title to be? \n\`skip\` for nothing, \`cancel\` for cancelling the creator.`);
-          embed.setAuthor(author, collected.first().attachments.first().url)
+          authoricon = collected.first().attachments.first().url
+          msg.edit(`Icon will be set to the image you sent, what should be the author URL? \n\`skip\` for nothing, \`cancel\` for cancelling the creator.`);
+          embed.setAuthor(author, authoricon)
           embedMsg.edit("", embed)
         } else {
           return message.channel.send(":x: | No image attached, command cancelled.");
+        }
+
+        //Author URL
+        collected = await message.channel.awaitMessages(m => m.author.id === message.author.id, { max: 1, time: 60000 });
+        if (!collected.first()) return message.channel.send(":x: | Command timed out.");
+        if (collected.first().content.toLowerCase() === "cancel") return message.channel.send(":x: | Command cancelled.");
+        if (collected.first().content.toLowerCase() === "skip") {
+          msg.edit("The embed won't have a author URL then, let's move to the title, what you want title to be? \n`skip` for nothing, `cancel` for cancelling the creator.");
+        } else {
+          if (!validURL(collected.first().content)) return message.channel.send(":x: | That's not a valid URL. Command cancelled.");
+          msg.edit(`Author URL is set to ${collected.first().content} now, let's move to the title, what you want title to be? \n\`skip\` for nothing, \`cancel\` for cancelling the creator.`);
+          embed.setAuthor(author, authoricon, collected.first().content)
+          embedMsg.edit("", embed)
         }
       }
       //Title
@@ -195,7 +210,7 @@ module.exports = {
           msg.edit("Embed wont have a footer icon then, do you want the embed to have a timestamp?. \n`yes` or `no`, `cancel` for cancelling the creator.");
         } else if (collected.first().attachments.first()) {
           msg.edit(`Footer image will be set to the image you sent, do you want the embed to have a timestamp? \n\`yes\` or \`no\`, \`cancel\` for cancelling the creator.`);
-          embed.setAuthor(footer, collected.first().attachments.first().url)
+          embed.setFooter(footer, collected.first().attachments.first().url)
           embedMsg.edit("", embed)
         } else {
           return message.channel.send(":x: | No image attached, command cancelled.");
