@@ -68,7 +68,7 @@ module.exports = {
               })
             }
           })
-        } else
+        } else {
           let name;
           if (args[2]) name = args[2]
           message.guild.emojis.create(emoji, name ? name : `emoji_${message.guild.emojis.cache.size}`).then(e => {
