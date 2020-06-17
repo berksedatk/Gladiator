@@ -116,7 +116,7 @@ module.exports = {
       if (collected.first().content.toLowerCase() === "skip") {
         msg.edit("No description will be given for this embed, then what should be the color? You need a valid Hex code for this(for extra time command will expire in 2 minutes, look up hex codes.) \n`skip` for nothing, `cancel` for cancelling the creator.");
       } else {
-        if (collected.first().content.length > 256) return message.channel.send(":x: | Description cannot exceed 2048 characters. Command cancelled.");
+        if (collected.first().content.length > 2048) return message.channel.send(":x: | Description cannot exceed 2048 characters. Command cancelled.");
         msg.edit(`The description will be set to your message, then what should be the color? You need a valid Hex code for this(for extra time command will expire in 2 minutes, look up hex codes.) \n\`skip\` for nothing, \`cancel\` for cancelling the creator.`)
         embed.setDescription(collected.first().content)
         embedMsg.edit("", embed)
