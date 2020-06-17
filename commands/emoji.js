@@ -79,7 +79,7 @@ module.exports = {
         }
       } else if (message.attachments.first()) {
           let name = args.size >= 1 ? args[1] : undefined
-          message.guild.emojis.create(message.attachments.first(), name ? name : `emoji_${message.guild.emojis.cache.size}`).then(e => {
+          message.guild.emojis.create(message.attachments.first().url, name ? name : `emoji_${message.guild.emojis.cache.size}`).then(e => {
             return message.channel.send(":white_check_mark: | Emoji has been created! " + e.toString())
           }).catch(err => {
             return message.channel.send("An error occured: " + err)
