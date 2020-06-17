@@ -24,7 +24,7 @@ module.exports = {
   async execute(bot, message, args) {
     if (!args[0]) return message.channel.send(":x: | You didn't provide a option or emoji.")
 
-    if (args[0].toLowerCase() === "add") {
+    if (args[0].toLowerCase() === "add" && message.member.hasPermission("MANAGE_EMOJIS")) {
       if (!args[1]) return message.channel.send(":x: | You didnt't provide a url or a emoji to add.");
 
       if (validURL(args[1])) {
@@ -68,7 +68,7 @@ module.exports = {
               })
             }
           })
-        } else {
+        } else
           let name;
           if (args[2]) name = args[2]
           message.guild.emojis.create(emoji, name ? name : `emoji_${message.guild.emojis.cache.size}`).then(e => {
@@ -77,7 +77,15 @@ module.exports = {
             return message.channel.send("An error occured: " + err)
           });
         }
-      } else {
+      } else if (message.attachments.first()) {
+          let name = args.size >= 1 ? args[1] : undefined
+          message.guild.emojis.create(message.attachments.first(), name ? name : `emoji_${message.guild.emojis.cache.size}`).then(e => {
+            return message.channel.send(":white_check_mark: | Emoji has been created! " + e.toString())
+          }).catch(err => {
+            return message.channel.send("An error occured: " + err)
+          })
+
+        } else {
         return message.channel.send(":x: | You didn't provide a custom emoji or a image to make a emoji of.")
       }
 
