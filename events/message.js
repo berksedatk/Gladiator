@@ -28,7 +28,7 @@ module.exports = {
     if (message.author.bot || config.blacklisted.includes(message.guild.id)) return;
     //Database
     if (message.content.length < 500 && message.content.length > 10 && message.channel.type != "dm") {
-      await Guild.findOne({ guildID: message.guild.id }, async (err, guild) => {
+      Guild.findOne({ guildID: message.guild.id }, async (err, guild) => {
         if (err) return console.log(`An error occured: ${err}`);
         if (!guild) {
           const guild = new Guild({
@@ -61,7 +61,7 @@ module.exports = {
             xproles: {},
             reactionroles: {}
           });
-          await guild.save().then(() => console.log(`Database could not be found so added a new one for ${message.guild.name}`)).catch(err => message.channel.send("New Guild cannot be added to the database! " + err));
+          guild.save().then(() => console.log(`Database could not be found so added a new one for ${message.guild.name}`)).catch(err => message.channel.send("New Guild cannot be added to the database! " + err));
         } else if (guild) {
           //Blacklist
           if (guild.settings.blacklist.enabled && guild.settings.blacklist.list.includes(message.channel.id)) return blacklisted = true;
@@ -140,7 +140,7 @@ module.exports = {
                   color: member.color,
                   mode: member.mode
                 });
-                await guild.save().catch(err => message.channel.send(`An error occured: ${err}`));
+                guild.save().catch(err => message.channel.send(`An error occured: ${err}`));
               } else {
                 guild.members.set(message.author.id, {
                   username: message.author.tag,
@@ -151,7 +151,7 @@ module.exports = {
                   color: member.color,
                   mode: member.mode
                 })
-                await guild.save().catch(err => message.channel.send(`An error occured: ${err}`));
+                guild.save().catch(err => message.channel.send(`An error occured: ${err}`));
               }
             }
           } else {
@@ -164,7 +164,7 @@ module.exports = {
               color: "lightblue",
               mode: "dark"
             });
-            await guild.save().catch(err => message.channel.send(`An error occured: ${err}`));
+            guild.save().catch(err => message.channel.send(`An error occured: ${err}`));
           }
         }
       });
@@ -202,7 +202,7 @@ module.exports = {
         if (!message.guild.members.cache.get(message.author.id).permissions.has(permission)) missing.push(prettyString(permission))
       })
       if (missing.length > 0) {
-        return message.channel.send(":x: | You are not accesed to use this command! Missing permission(s): " + missing.join(', '));
+        return message.channel.send(":x: | You don't have the required permission(s) to use this command!! Missing permission(s): " + missing.join(', '));
       }
     }
 
