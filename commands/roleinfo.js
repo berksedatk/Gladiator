@@ -74,7 +74,7 @@ module.exports = {
         .addField("Bot Role", String(role.managed)[0].toUpperCase() + String(role.managed).substr(1), true)
         .addField("Color(Hex) Code", colorToHexString(role.color), true)
         .addField("Created At", role.createdAt.toUTCString())
-        .addField("Permissions", `${perms.join(', ')}`, true);
+        .addField("Permissions", `${perms.join(', ').length < 1 ? "No permissions" : perms.join(', ')}`, true);
       message.channel.send(roleEmbed);
     }
   }
