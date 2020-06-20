@@ -53,7 +53,7 @@ module.exports = {
           if (!guild) return message.channel.send("There was an error while fetching server database, please contact a bot dev! (https://discord.gg/tkR2nTf)");
           if (guild) {
             let keys = Array.from(guild.cases.keys())
-            caseNumber = await keys.length < 1 ? "0" : (Number(keys.slice(-1).pop()) + 1).toString()
+            caseNumber = keys.length < 1 ? "0" : (Number(keys.slice(-1).pop()) + 1).toString()
 
             let reason = time === null ? (args.length > 1 ? args.splice(1, args.length).join(' '): "No reason provided.") : (args.length > 2 ? args.splice(2, args.length).join(' ') : "No reason was provided.")
 

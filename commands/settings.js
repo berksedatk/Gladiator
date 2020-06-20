@@ -25,17 +25,17 @@ module.exports = {
           let join = `\`${prefix}settings join <setting>\``
           let levelup = `\`${prefix}settings levelup <setting>\``
           let blacklist = `\`${prefix}settings blacklist <setting>\``
-          
+
           join += `\n **- Send Join Message(send):** \`${guild.settings.join.send}\``
           join += `\n **- Join Message Channel(channel):** ${guild.settings.join.channel === "default" ? "`default`": `<#${guild.settings.join.channel}>`}`
           join += `\n **- Join Message(message):** "User, ${guild.settings.join.message}"`
           join += `\n **- Autorole(autorole):** \`${guild.settings.join.autorole}\``
           join += `\n **- Join Autorole(role):** ${guild.settings.join.role === null ? "`no role`" : `<@&${guild.settings.join.role}>`}`
           join += `\n **- Bot Autorole(botrole):** ${guild.settings.join.botrole === null ? "`no role`" : `<@&${guild.settings.join.botrole}>`}`
-          
+
           levelup += `\n **- Send Level Up Message(send):** \`${guild.settings.levelup.send}\``
           levelup += `\n **- Level Up Message Channel(channel):** ${guild.settings.levelup.channel === "default" ? "`default`" : `<#${guild.settings.levelup.channel}>`}`
-          
+
           let channels = "";
           if (!guild.settings.blacklist.list[0]) {
             channels = "None"
@@ -44,10 +44,10 @@ module.exports = {
               channels += `<#${channel}> `
             })
           }
-          
+
           blacklist += `\n **- Blacklist(enabled):** \`${guild.settings.blacklist.enabled}\``
           blacklist += `\n **- Blacklisted Channel(s)(add/remove):** ${channels}`
-          
+
           const settingsEmbed = new Discord.MessageEmbed()
           .setTitle(":wrench: Current Server Settings")
           .setDescription(`You can get into a category and change the setting by using \`${prefix}settings <category> <setting>\` command.`)
@@ -68,17 +68,17 @@ module.exports = {
             if (!args[2]) return message.channel.send(":x: | You didnt provide a option. `true, false`");
             if (!args[2] === "true" || !args[2] === "false") return message.channel.send(":x: | You didnt provide a true option. `true, false`");
             if ((args[2] === "true") === guild.settings.join.send) return message.channel.send(`:x: | It's already set to \`${guild.settings.join.send}\`.`);
-            
+
             guild.settings.join.send = (args[2] === "true")
             guild.save().then(() => message.channel.send(`:white_check_mark: | Send Join Message has been set to \`${(args[2] === "true")}\`.`)).catch(err => message.channel.send(`An error occured: ${err}`));
-            
+
           } else if (args[1].toLowerCase() === "channel") {
             //Update channel
             if (!args[2]) return message.channel.send(":x: | You didnt provide a channel.");
-            
+
             let channel = message.mentions.channels.first() ? message.mentions.channels.first().id
             : (message.guild.channels.cache.get(args[2]) ? message.guild.channels.cache.get(args[2]).id
-            : (args[2].toLowerCase() === "default" ? "default" 
+            : (args[2].toLowerCase() === "default" ? "default"
             : null))
             if (channel === null) return message.channel.send(":x: | You didnt provide a true channel.");
             if (channel === "default") {
@@ -92,24 +92,24 @@ module.exports = {
             //Update message
             if (!args[2]) return message.channel.send(":x: | You didnt provide a message, to disable it you can use `send` setting.");
             const quote = args.slice(2, args.length)
-            
+
             guild.settings.join.message = quote.join(" ")
             guild.save().then(() => message.channel.send(`:white_check_mark: | Join Message has been set to "User, ${quote.join(" ")}"`)).catch(err => message.channel.send(`An error occured: ${err}`));
           } else if (args[1].toLowerCase() === "autorole") {
             //Autorole enable-disable
             if (!args[2]) return message.channel.send(":x: | You didnt provide a option. `true, false`");
             if ((args[2] === "true") === guild.settings.join.autorole) return message.channel.send(`:x: | It's already set to \`${guild.settings.join.autorole}\`.`);
-            
+
             guild.settings.join.autorole = (args[2] === "true")
             guild.save().then(() => message.channel.send(`:white_check_mark: | Join Autorole has been set to \`${(args[2] === "true")}\`.`)).catch(err => message.channel.send(`An error occured: ${err}`));
           } else if (args[1].toLowerCase() === "role") {
-            //Autorole 
+            //Autorole
             if (!args[2]) return message.channel.send(":x: | You didnt provide a role");
             let role = message.mentions.roles.first() ? message.mentions.roles.first()
               : (message.guild.roles.cache.get(args[2]) ? message.guild.roles.cache.get(args[2])
               : (message.guild.roles.cache.filter(role => role.name.includes(args[2])).size >= 1 ? message.guild.roles.cache.filter(role => role.name.includes(args[2])).array()
               : null))
-      
+
             if (role === null) return message.channel.send(":x: | You didn't provide a true role.");
             if (role.length > 1) {
               let rolemsg = "";
@@ -126,20 +126,20 @@ module.exports = {
             } else {
               role = role[0] || role
             }
-            
+
             if (!role.editable) return message.channel.send(":x: | I can't manage this role. Sorry.");
             if (message.member.roles.highest.position <= message.guild.roles.cache.find(grole => grole.name.toLowerCase() == role.name.toLowerCase()).position && message.guild.owner.id != message.author.id) return message.channel.send(":x: | You can't manage this role.");
-            
+
             guild.settings.join.role = role.id
             guild.save().then(() => message.channel.send({embed: {description: `:white_check_mark: | Autorole has been set to ${role}.`}})).catch(err => message.channel.send(`An error occured: ${err}`));
           } else if (args[1].toLowerCase() === "botrole") {
-            //Autorole 
+            //Autorole
             if (!args[2]) return message.channel.send(":x: | You didnt provide a role");
             let role = message.mentions.roles.first() ? message.mentions.roles.first()
               : (message.guild.roles.cache.get(args[2]) ? message.guild.roles.cache.get(args[2])
               : (message.guild.roles.cache.filter(role => role.name.includes(args[2])).size >= 1 ? message.guild.roles.cache.filter(role => role.name.includes(args[2])).array()
               : null))
-      
+
             if (role === null) return message.channel.send(":x: | You didn't provide a true role.");
             if (role.length > 1) {
               let rolemsg = "";
@@ -156,10 +156,10 @@ module.exports = {
             } else {
               role = role[0] || role
             }
-            
+
             if (!role.editable) return message.channel.send(":x: | I can't manage this role. Sorry.");
             if (message.member.roles.highest.position <= message.guild.roles.cache.find(grole => grole.name.toLowerCase() == role.name.toLowerCase()).position && message.guild.owner.id != message.author.id) return message.channel.send(":x: | You can't manage this role.");
-            
+
             guild.settings.join.botrole = role.id
             guild.save().then(() => message.channel.send({embed: {description:`:white_check_mark: | Bot Autorole has been set to ${role}.`}})).catch(err => message.channel.send(`An error occured: ${err}`));
           } else {
@@ -176,12 +176,12 @@ module.exports = {
             if (!args[2]) return message.channel.send(":x: | You didnt provide a option. `true, false`");
             if (!args[2] === "true" || !args[2] === "false") return message.channel.send(":x: | You didnt provide a true option. `true, false`");
             if ((args[2] === "true") === guild.settings.levelup.send) return message.channel.send(`:x: | It's already set to \`${guild.settings.levelup.send}\`.`);
-            
+
             guild.settings.levelup.send = (args[2] === "true")
             guild.save().then(() => message.channel.send(`:white_check_mark: | Send Level Up Message has been set to \`${(args[2] === "true")}\`.`)).catch(err => message.channel.send(`An error occured: ${err}`));
 
             if (!args[2]) return message.channel.send(":x: | You didnt provide a option. `true, false`");
-            
+
           } else if (args[1].toLowerCase() === "channel") {
             //Update channel
             if (!args[2]) return message.channel.send(":x: | You didnt provide a channel.");
@@ -190,7 +190,7 @@ module.exports = {
               : (args[2].toLowerCase() === "default" ? "default"
               : null ))
             if (channel === null) return message.channel.send(":x: | You didnt provide a true channel or type `default`.");
-            
+
             if (channel === "default") {
               guild.settings.levelup.channel = "default"
               guild.save().then(() => message.channel.send(`:white_check_mark: | Level Up Message Channel has been set to current channel that the user on.`)).catch(err => message.channel.send(`An error occured: ${err}`));
@@ -198,26 +198,26 @@ module.exports = {
             } else {
               guild.settings.levelup.channel = channel
               guild.save().then(() => message.channel.send(`:white_check_mark: | Level Up Message Channel has been set to <#${channel}>.`)).catch(err => message.channel.send(`An error occured: ${err}`));
-            } 
+            }
           } else {
             //Error
             message.channel.send(":x: | You need to provide a true setting. `send, channel`");
-          }       
+          }
         } else if (args[0].toLowerCase() === "blacklist") {
           //Blacklist options
           if (!args[1]) {
             //Error
             message.channel.send(":x: | You need to provide a setting. `enabled, add, remove`");
-            
+
           } else if (args[1].toLowerCase() === "enabled") {
             //Enable - Disable blacklisting
             if (!args[2]) return message.channel.send(":x: | You didnt provide a option. `true, false`");
             if (!args[2] === "true" || !args[2] === "false") return message.channel.send(":x: | You didnt provide a true option. `true, false`");
             if ((args[2] === "true") === guild.settings.blacklist.send) return message.channel.send(`:x: | It's already set to \`${guild.settings.blacklist.send}\`.`);
-            
+
             guild.settings.blacklist.enabled = (args[2] === "true")
             guild.save().then(() => message.channel.send(`:white_check_mark: | Blacklisting has been set to \`${(args[2] === "true")}\`.`)).catch(err => message.channel.send(`An error occured: ${err}`));
-            
+
           } else if (args[1].toLowerCase() === "add") {
             //Add a blacklisted channel
             if (!args[2]) return message.channel.send(":x: | You didnt provide a channel.");
@@ -225,7 +225,7 @@ module.exports = {
               : (message.guild.channels.cache.get(args[0]) ? message.guild.channels.cache.get(args[0])
               : (message.guild.channels.cache.filter(channel => channel.name.includes(args[0])).size >= 1 ? message.guild.channels.cache.filter(channel => channel.name.includes(args[0])).array()
               : null))
-      
+
             if (channel === null) return message.channel.send(":x: | You didn't provide a true channel.");
             guild.settings.blacklist.list.push(channel.id)
             guild.save().then(() => message.channel.send(`:white_check_mark: | ${channel} has been added to the blacklisted channels.`)).catch(err => message.channel.send(`An error occured: ${err}`));
@@ -243,7 +243,7 @@ module.exports = {
               : (message.guild.channels.cache.get(args[0]) ? message.guild.channels.cache.get(args[0])
               : (message.guild.channels.cache.filter(channel => channel.name.includes(args[0])).size >= 1 ? message.guild.channels.cache.filter(channel => channel.name.includes(args[0])).array()
               : null))
-      
+
               if (channel === null) return message.channel.send(":x: | You didn't provide a true channel.");
               if (guild.settings.blacklist.list.indexOf(channel.id) === -1) {
                 return message.channel.send(":x: | This channel is not blacklisted.")
@@ -251,10 +251,10 @@ module.exports = {
                 guild.settings.blacklist.list.splice(guild.settings.blacklist.list.indexOf(channel.id), 1)
                 guild.save().then(() => message.channel.send(`:white_check_mark: | ${channel} has been removed from the blacklisted channels.`)).catch(err => message.channel.send(`An error occured: ${err}`));
               }
-            }          
+            }
           } else {
             //Error
-            message.channel.send(":x: | You need to provide a true setting. `send, channel`");
+            message.channel.send(":x: | You need to provide a true setting. `enabled, add, remove`");
           }
         } else {
           //Error

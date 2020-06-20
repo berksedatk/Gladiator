@@ -1,4 +1,6 @@
 const Discord = require("discord.js");
+const ms = require("ms");
+const prettyms = require("pretty-ms");
 
 module.exports = {
   name: "userinfo",
@@ -9,7 +11,7 @@ module.exports = {
   cooldown: 5,
   guildOnly: true,
   async execute(bot, message, args) {
-    
+
     let user;
 
     if (!args[0]) {
@@ -104,8 +106,8 @@ module.exports = {
       .setColor(user.displayColor)
       .setFooter("Requested by " + message.author.username, message.author.avatarURL())
       .setThumbnail(user.user.avatarURL)
-      .addField("Discord Join Date", user.user.createdAt)
-      .addField("Guild Join Date", user.joinedAt, true)
+      .addField("Discord Join Date", `${user.user.createdAt.toUTCString()}\n(${prettyms(Date.now() - user.user.createdTimestamp, { verbose: true })} ago)`)
+      .addField("Guild Join Date", `${user.joinedAt.toUTCString()}\n(${prettyms(Date.now() - user.joinedTimestamp, { verbose: true })} ago)`, true)
       .addField("Join Position",`${joinposition + 1}.`, true)
       .addField("Nickname", user.nickname ? user.nickname : "Nothing")
       .addField("Status", platforms, true)

@@ -39,14 +39,14 @@ module.exports = {
       role = role[collected.first().content - 1]
       msg.delete()
       let count = 0;
-      message.guild.members.cache.forEach(member => {
-        if (member.roles.cache.get(role.id)) count++
-      })
-      let perms = []
-      role.permissions.toArray().forEach(perm => {
-        perms.push(prettyString(perm))
-      })
-      sendRoleEmbed(role, count, perms);
+        message.guild.members.cache.forEach(member => {
+          if (member.roles.cache.get(role.id)) count++
+        })
+        let perms = []
+        role.permissions.toArray().forEach(perm => {
+          perms.push(prettyString(perm))
+        })
+        sendRoleEmbed(role, count, perms);
     } else {
       role = role[0] || role
       let count = 0;
@@ -66,14 +66,15 @@ module.exports = {
         .setTimestamp()
         .setColor(role.color)
         .setFooter("Requested by " + message.author.username, message.author.avatarURL())
-        .addField("Role Id", role.id, true)
+        .setDescription(`Role ID: ${role.id}`)
         .addField("Seperated", String(role.hoist)[0].toUpperCase() + String(role.hoist).substr(1), true)
         .addField("Mentionable", String(role.mentionable)[0].toUpperCase() + String(role.mentionable).substr(1), true)
-        .addField("Position", `${role.position}/${message.guild.roles.cache.size}`, true)
+        .addField("Position", `${role.rawPosition}/${message.guild.roles.cache.size - 1}`, true)
         .addField("Member Count", count, true)
-        .addField("Bot role", String(role.managed)[0].toUpperCase() + String(role.managed).substr(1), true)
-        .addField("Color(Hex) code", colorToHexString(role.color), true)
-        .addField("Permissions", `${perms.length < 1 ? "None" : perms.join(', ')}`, true);
+        .addField("Bot Role", String(role.managed)[0].toUpperCase() + String(role.managed).substr(1), true)
+        .addField("Color(Hex) Code", colorToHexString(role.color), true)
+        .addField("Created At", role.createdAt.toUTCString())
+        .addField("Permissions", `${perms.join(', ')}`, true);
       message.channel.send(roleEmbed);
     }
   }

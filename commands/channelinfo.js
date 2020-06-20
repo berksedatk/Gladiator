@@ -1,4 +1,5 @@
 const Discord = require("discord.js");
+const prettyms = require("pretty-ms");
 
 module.exports = {
   name: "channelinfo",
@@ -46,7 +47,8 @@ module.exports = {
         .setTimestamp()
         .setColor("BLUE")
         .setFooter("Requested by " + message.author.tag, message.author.avatarURL())
-        .addField('Channel ID', channel.id)
+        .setDescription(`Channel ID: ${channel.id}`)
+        .addField("Created At:", `${channel.createdAt.toUTCString()}\n(${prettyms(Date.now() - channel.createdTimestamp, { verbose: true })} ago)`)
         .addField("Channel Type", channel.type[0].toUpperCase() + channel.type.substr(1), true)
         .addField("Position", `${channel.rawPosition}/${message.guild.channels.cache.size}`, true)
       if (channel.parentID && channel.type != "voice") {
