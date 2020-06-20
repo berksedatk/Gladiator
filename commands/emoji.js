@@ -78,7 +78,7 @@ module.exports = {
           });
         }
       } else if (message.attachments.first()) {
-          let name = args.size >= 1 ? args[1] : undefined
+          let name = args[1] ? args[1] : undefined
           message.guild.emojis.create(message.attachments.first().url, name ? name : `emoji_${message.guild.emojis.cache.size}`).then(e => {
             return message.channel.send(":white_check_mark: | Emoji has been created! " + e.toString())
           }).catch(err => {
@@ -89,7 +89,7 @@ module.exports = {
         return message.channel.send(":x: | You didn't provide a custom emoji or a image to make a emoji of.")
       }
 
-    } else if (args[0].toLowerCase() === "remove" || args[0].toLowerCase() === "delete") {
+    } else if (args[0].toLowerCase() === "remove" || args[0].toLowerCase() === "delete" && message.member.hasPermission("MANAGE_EMOJIS")) {
       if (!args[1])return message.channel.send(":x: | You didn't provide a emoji.");
       let emojiID = args[1].lastIndexOf(":") != -1 ? args[1].slice(args[1].lastIndexOf(":") + 1, args[1].length - 1) : undefined
       if (!emojiID) return message.channel.send(":x: | You didn't provide true a emoji.");
