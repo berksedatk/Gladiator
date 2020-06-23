@@ -7,6 +7,7 @@ module.exports = {
   usage: "<quote>",
   voted: true,
   cooldown: 10,
+  reqPermissions: ["MANAGE_MESSAGES"],
   execute(bot, message, args) {
     if (!args[0]) return message.channel.send(":x: | You didn't provide a quote.")
     const quote = args.join(" ");
