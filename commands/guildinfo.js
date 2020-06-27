@@ -1,6 +1,10 @@
 const Discord = require("discord.js");
 const prettyms = require("pretty-ms");
 
+function prettyString(string) {
+ return string.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}).replace(/_/g, " ").replace(/guild/gi, "Server")
+}
+
 module.exports = {
   name: "guildinfo",
   category: "Utility",
@@ -72,14 +76,20 @@ module.exports = {
       .setThumbnail(guild.iconURL())
       .setFooter("Requested by " + message.author.tag, message.author.avatarURL())
       .setColor("PURPLE")
-      .addField("Guild Owner",`${guild.owner}(${guild.owner.id})`)
+      .addField("Guild Owner",`<:owner:724048854592520283> ${guild.owner}(${guild.owner.id})`)
       .addField("Guild Create Date", `${guild.createdAt}(${prettyms(Date.now() - guild.createdTimestamp, {verbose: true})} ago)`)
-      .addField("Members", `Users: ${usercount}, Bots: ${botcount} (Total ${guild.members.cache.size}) \n\nOnline: ${onlinecount}, Idle: ${idlecount}, DND: ${dndcount} (Total ${onlinecount + idlecount + dndcount}) \nOffline: ${offlinecount} \n\nDesktop: ${desktopcount}, Mobile: ${mobilecount}, Web: ${webcount}`, true)
+      .addField("Members", `Users: ${usercount}, Bots: ${botcount} (Total ${guild.members.cache.size}) \n\n<:online2:723959335209664535>: ${onlinecount}, <:idle2:723959389006069841>: ${idlecount}, <:dnd2:723959428679991336>: ${dndcount} (Total ${onlinecount + idlecount + dndcount}) \n<:offline2:724050268907372624>: ${offlinecount} \n\nDesktop: ${desktopcount}, Mobile: ${mobilecount}, Web: ${webcount}`, true)
       .addField("Channels", channels, true)
+      .addField("Explicit Content Filter", prettyString(guild.explicitContentFilter))
+      .addField("2FA", guild.mfaLevel === 0 ? "Disabled" : "Enabled")
+      .addField("Verification Level", prettyString(guild.verificationLevel))
+      .addField("Server Boost", `<:boost:726534006560129144> ${guild.premiumSubscriptionCount} (Level ${guild.premiumTier})`)
       .addField("Roles", guild.roles.cache.size, true)
       .addField("Emojis", guild.emojis.cache.size, true)
-      .addField("Features", features < 1 ? "None" : features.join(', '), true)
+      .addField("Features", features < 1 ? "None" : features.join(', '))
       message.guild.banner ? guildEmbed.setImage(message.guild.bannerURL()) : false
+      guild.partnered ? guildEmbed.setDescription(`<:partnerserver:724048339037061131> Partnered Discord Server`) : false
+      guild.verified ? guildEmbed.setDescription(`<:verified:724048680029519872> Verified Discord Server`) : false
 
     message.channel.send(guildEmbed);
   }

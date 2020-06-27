@@ -2,6 +2,10 @@ const Discord = require("discord.js");
 const ms = require("ms");
 const prettyms = require("pretty-ms");
 
+function prettyString(string) {
+ return string.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}).replace(/_/g, " ").replace(/guild/gi, "Server")
+}
+
 module.exports = {
   name: "userinfo",
   category: "Utility",
@@ -63,28 +67,92 @@ module.exports = {
     } else {
       presenceMes = 'Nothing';
     }
-    let joinposition;
 
+    let joinposition;
     let arr = message.guild.members.cache.array();
     arr.sort((a, b) => a.joinedAt - b.joinedAt);
 
     for (let i = 0; i < arr.length; i++) {
       if (arr[i].id == user.id) joinposition = i;
     }
-
+    let icon = "";
     let platforms = "";
     let plat = user.presence.clientStatus;
     if (plat == null || JSON.stringify(plat) == "{}") {
-      platforms += "Offline";
+      platforms += "<:offline:724047678954274867> Offline";
+      icon = "<:offline2:724050268907372624>"
     } else {
-      if (plat.web) {
-        platforms += `Web: ${plat.web}\n`;
-      }
       if (plat.mobile) {
-        platforms += `Mobile: ${plat.mobile}\n`;
+        if (plat.mobile === "online") {
+          platforms += `Mobile: <:mobile2:724052069824200754> Online\n`
+          icon = `<:online2:723959335209664535>`
+        } else if (plat.mobile === "idle") {
+          platforms += `Mobile: <:idle:723959173876023366> Idle\n`
+          icon = `<:idle2:723959389006069841>`
+        } else if (plat.mobile === "dnd") {
+          platforms += `Mobile: <:dnd:723959216481632277> DND\n`
+          icon = `<:dnd2:723959428679991336>`
+        }
+      }
+      if (plat.web) {
+        if (user.presence.activities[0]) {
+          if (user.presence.activities[0].type === "STREAMING") {
+            platforms += `Web: <:streaming:723959296076808262> Online\n`
+            icon = `<:streaming2:724050154273112175>`
+          } else {
+            if (plat.web === "online") {
+              platforms += `Web: <:online:723959109468291072> Online\n`
+              icon = `<:online2:723959335209664535>`
+            } else if (plat.web === "idle") {
+              platforms += `Web: <:idle:723959173876023366> Idle\n`
+              icon = `<:idle2:723959389006069841>`
+            } else if (plat.web === "dnd") {
+              platforms += `Web: <:dnd:723959216481632277> DND\n`
+              icon = `<:dnd2:723959428679991336>`
+            }
+          }
+        } else {
+          if (plat.web === "online") {
+            platforms += `Web: <:online:723959109468291072> Online\n`
+            icon = `<:online2:723959335209664535>`
+          } else if (plat.web === "idle") {
+            platforms += `Web: <:idle:723959173876023366> Idle\n`
+            icon = `<:idle2:723959389006069841>`
+          } else if (plat.web === "dnd") {
+            platforms += `Web: <:dnd:723959216481632277> DND\n`
+            icon = `<:dnd2:723959428679991336>`
+          }
+        }
       }
       if (plat.desktop) {
-        platforms += `Desktop: ${plat.desktop}\n`;
+        if (user.presence.activities[0]) {
+          if (user.presence.activities[0].type === "STREAMING") {
+            platforms += `Desktop: <:streaming:723959296076808262> Online`
+            icon = `<:streaming2:724050154273112175>`
+          } else {
+            if (plat.desktop === "online") {
+              platforms += `Desktop: <:online:723959109468291072> Online\n`
+              icon = `<:online2:723959335209664535>`
+            } else if (plat.desktop === "idle") {
+              platforms += `Desktop: <:idle:723959173876023366> Idle\n`
+              icon = `<:idle2:723959389006069841>`
+            } else if (plat.desktop === "dnd") {
+              platforms += `Desktop: <:dnd:723959216481632277> DND\n`
+              icon = `<:dnd2:723959428679991336>`
+            }
+          }
+        } else {
+          if (plat.desktop === "online") {
+            platforms += `Desktop: <:online:723959109468291072> Online\n`
+            icon = `<:online2:723959335209664535>`
+          } else if (plat.desktop === "idle") {
+            platforms += `Desktop: <:idle:723959173876023366> Idle\n`
+            icon = `<:idle2:723959389006069841>`
+          } else if (plat.desktop === "dnd") {
+            platforms += `Desktop: <:dnd:723959216481632277> DND\n`
+            icon = `<:dnd2:723959428679991336>`
+          }
+        }
       }
     }
 
@@ -99,19 +167,66 @@ module.exports = {
     } else {
       content = `> ${user.lastMessage}(${user.lastMessageID})`;
     }
+
+    let badges = []
+    if (user.user.flags) {
+      user.user.flags.toArray().forEach(badge => {
+        switch (badge) {
+          case "DISCORD_EMPLOYEE":
+            badges.push("<:discordmod:724048439557619775> - Discord Employee")
+            break;
+          case "DISCORD_PARTNER":
+            badges.push("<:partneruser:724048499917979840> - Discord Partner")
+            break;
+          case "HYPESQUAD_EVENTS":
+            badges.push("<:hypesquad:724048305398480907> - Hypesquad Events")
+            break;
+          case "BUGHUNTER_LEVEL_1":
+            badges.push("<:bughunter:724048542716526602> - Bug Hunter")
+            break;
+          case "BUGHUNTER_LEVEL_2":
+            badges.push("<:bughunter2:724048584655372448> - Bug Hunter Level 2")
+            break;
+          case "HOUSE_BRAVERY":
+            badges.push("<:bravery:724048228877860885> - Hypesquad Bravery")
+            break;
+          case "HOUSE_BRILLIANCE":
+            badges.push("<:briliance:724048274310430731> - Hypesquad Brilliance")
+            break;
+          case "HOUSE_BALANCE":
+            badges.push("<:balance:724048116394885150> - Hypesquad Balance")
+            break;
+          case "EARLY_SUPPORTER":
+            badges.push("<:earlysupporter:724048623888891955> - Early Supporter")
+            break;
+          case "SYSTEM":
+            badges.push("SYSTEM")
+            break;
+          case "VERIFIED_BOT":
+            badges.push("<:verified:724048680029519872> - Verified Bot")
+            break;
+          case "VERIFIED_DEVELOPER":
+            badges.push("<:botdev:724047952196403322> - Verified Bot Developer")
+            break;
+        }
+      })
+    }
+
+    icon += user.user.bot ? `<:bot:724052575405735997>` : (message.guild.owner.id === user.user.id ? `<:owner:724048854592520283>`: ``)
     const userinfoEmbed = new Discord.MessageEmbed()
-      .setAuthor(user.user.tag, user.user.avatarURL())
-      .setDescription(`User ID: ${user.id}`)
+      .setAuthor(`${user.user.tag}`, user.user.avatarURL())
+      .setThumbnail(user.user.avatarURL())
+      .setDescription(`${icon} User ID: ${user.id}`)
       .setTimestamp()
       .setColor(user.displayColor)
       .setFooter("Requested by " + message.author.username, message.author.avatarURL())
-      .setThumbnail(user.user.avatarURL)
       .addField("Discord Join Date", `${user.user.createdAt.toUTCString()}\n(${prettyms(Date.now() - user.user.createdTimestamp, { verbose: true })} ago)`)
       .addField("Guild Join Date", `${user.joinedAt.toUTCString()}\n(${prettyms(Date.now() - user.joinedTimestamp, { verbose: true })} ago)`, true)
       .addField("Join Position",`${joinposition + 1}.`, true)
       .addField("Nickname", user.nickname ? user.nickname : "Nothing")
       .addField("Status", platforms, true)
       .addField("Presence", presenceMes, true)
+      .addField("Badges", badges.length >= 1 ? badges : "No Badges")
       .addField("Last Message", content)
       .addField("Roles", roles);
     message.channel.send(userinfoEmbed);
