@@ -105,7 +105,7 @@ module.exports = {
 
     } else if (args[0].lastIndexOf(":") != -1) {
       let emojiID = args[0].lastIndexOf(":") != -1 ? args[0].slice(args[0].lastIndexOf(":") + 1, args[0].length - 1) : undefined
-      if (!emojiID) return message.channel.send(":x: | You didn't provide true a emoji.");
+      if (!emojiID) return message.channel.send(":x: | You didn't provide a true emoji.");
 
       let emoji = bot.emojis.resolve(emojiID) ? bot.emojis.resolve(emojiID).url : undefined
       if (!emoji) {
