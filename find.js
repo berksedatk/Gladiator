@@ -42,8 +42,6 @@ module.exports = {
     if (!message) throw new Error("Message is not defined.")
     if (!str) throw new Error("User string is not defined.")
 
-    setTimeout(() => {throw new Error("Could not find the User. Timed out.")}, 60000);
-
     let memberCache = message.guild.members.cache
     let member;
 
@@ -82,8 +80,6 @@ module.exports = {
     if (!message) throw new Error("Message is not defined.")
     if (!str) throw new Error("User string is not defined.")
 
-    setTimeout(() => {throw new Error("Could not find the Channel. Timed out.")}, 60000);
-
     let channelCache = message.guild.channels.cache
     let channel;
 
@@ -118,8 +114,6 @@ module.exports = {
     if (!client) throw new Error("Client is not defined.")
     if (!message) throw new Error("Message is not defined.")
     if (!str) throw new Error("User string is not defined.")
-
-    setTimeout(() => {throw new Error("Could not find the Role. Timed out.")}, 60000);
 
     let roleCache = message.guild.roles.cache
     let role;
