@@ -4,8 +4,6 @@ module.exports = {
     if (!message) throw new Error("Message is not defined.")
     if (!str) throw new Error("User string is not defined.")
 
-    setTimeout(() => {throw new Error("Could not find the User. Timed out.")}, 60000);
-
     let userCache = client.users.cache
     let user;
 
