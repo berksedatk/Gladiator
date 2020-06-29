@@ -1,5 +1,6 @@
 const Discord = require("discord.js");
 const prettyms = require("pretty-ms");
+const find = require("../find.js");
 
 module.exports = {
   name: "channelinfo",
@@ -16,26 +17,8 @@ module.exports = {
       sendChannelEmbed(message.channel, parentName);
     } else if (args[0]) {
 
-      let channel = message.mentions.channels.first() ? message.mentions.channels.first()
-      : (message.guild.channels.cache.get(args[0]) ? message.guild.channels.cache.get(args[0])
-      : (message.guild.channels.cache.filter(channel => channel.name.toLowerCase().includes(args[0].toLowerCase())).size >= 1 ? message.guild.channels.cache.filter(channel => channel.name.toLowerCase().includes(args[0].toLowerCase())).array()
-      : undefined))
-      if (!channel) return message.channel.send(":x: | You didn't provide a true channel.");
-
-      if (channel.length > 1) {
-        let channelmsg = "";
-        for (let i = 0; i < (channel.length > 10 ? 10 : channel.length); i++) {
-          channelmsg += `\n${i + 1} - ${channel[i].name}`
-        }
-        let msg = await message.channel.send("", {embed: {description: `**There are multiple channels found with name '${args[0]}', which one would you like to use?** \n${channelmsg}`, footer: {text: "You have 30 seconds to respond."}, timestamp: Date.now()}});
-        let collected = await message.channel.awaitMessages(m => m.author.id === message.author.id, { max: 1, time: 30000 })
-        if (!collected.first()) return message.channel.send(":x: | Command timed out.")
-        if (Number(collected.first().content) > channel.length) return message.channel.send(":x: | Invalid channel number. Command cancelled.");
-        channel = channel[collected.first().content - 1]
-        msg.delete()
-      } else {
-        channel = channel[0] || channel
-      }
+      let channel = await find.channel(bot, message, args[0])
+      if (!channel) return message.channel.send(":x: | You didn't provide a true channel.")
 
       let parentName = channel.parentID === null ? "No Category" : bot.channels.cache.get(channel.parentID).name;
       sendChannelEmbed(channel, parentName);

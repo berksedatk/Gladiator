@@ -3,6 +3,7 @@ const Canvas = require("canvas");
 const config = require("../config.json");
 const Guild = require("../schemas/guild.js");
 const mongoose = require("mongoose");
+const find = require("../find.js");
 
 const applyText = (canvas, text) => {
   const ctx = canvas.getContext("2d");
@@ -93,27 +94,8 @@ module.exports = {
           } else {
             //Send user's profile
             if (!args[0]) return message.channel.send(":x: | You didn't provided a user.");
-            let user = message.mentions.users.first() ? message.mentions.users.first()
-              : (message.guild.members.cache.get(args[0]) ? message.guild.members.cache.get(args[0])
-              : (message.guild.members.cache.filter(u => u.user.username.toLowerCase().includes(args[0].toLowerCase())).size > 0 ? message.guild.members.cache.filter(u => u.user.username.toLowerCase().includes(args[0].toLowerCase())).array()
-              : undefined))
+            let user = find.guildMember(bot, message, args[0])
             if (!user) return message.channel.send(":x: | You didn't provide a true user.");
-
-            if (user.length > 1) {
-              let usermsg = "";
-                for (let i = 0; i < (user.length > 10 ? 10 : user.length); i++) {
-              usermsg += `\n${i + 1} -> ${user[i].user.username}`;
-                }
-
-              let msg = await message.channel.send("", {embed: {description: `**There are multiple users found with name '${args[0]}', which one would you like to use?** \n${usermsg}`, footer: {text: "You have 30 seconds to respond."}, timestamp: Date.now()}});
-              let collected = await message.channel.awaitMessages(m => m.author.id === message.author.id, { max: 1, time: 30000 })
-              if (!collected.first()) return message.channel.send(":x: | Command timed out.")
-              if (Number(collected.first().content) > user.length) return message.channel.send(":x: | Invalid user number. Command cancelled.");
-              user = user[collected.first().content - 1]
-              msg.delete()
-            } else {
-              user = user[0] || user
-            }
 
             getUser(user, guild)
           }

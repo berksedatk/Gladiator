@@ -1,5 +1,6 @@
 const Discord = require("discord.js");
 const prefixes = require("../config.json").prefixes;
+const find = require("../find.js");
 
 module.exports = {
   name: "role",
@@ -21,41 +22,18 @@ module.exports = {
       //Give user a role
       if (!args[1]) return message.channel.send(":x: | You need to provide a user.");
       //Find user
-      let user = message.mentions.users.first() ? message.mentions.users.first() 
-        : (bot.users.cache.get(args[1]) ? bot.users.cache.get(args[1])
-        : (bot.users.cache.filter(user => user.username.toLowerCase().includes(args[1].toLowerCase())).first() ? bot.users.cache.filter(user => user.username.toLowerCase().includes(args[1].toLowerCase())).first()
-        : (args[1].toLowerCase === "mass" ? args[1].toLowerCase === "mass" 
-        : null)))
-      if (user === null) return message.channel.send(":x: | You didn't provide a true user.");
-      
+      let user = await find.guildMember(bot, message, args[1])
+      if (!user) return message.channel.send(":x: | You didn't provide a true user.");
+
       //Find role
-      let role = message.mentions.roles.first() ? message.mentions.roles.first()
-      : (message.guild.roles.cache.get(args[2]) ? message.guild.roles.cache.get(args[2])
-      : (message.guild.roles.cache.filter(role => role.name.includes(args[2])).size >= 1 ? message.guild.roles.cache.filter(role => role.name.includes(args[2])).array()
-      : null))
-      
-      if (role === null) return message.channel.send(":x: | You didn't provide a true role.");     
-      if (role.length > 1) {
-        let rolemsg = "";
-        for (let i = 0; i < role.length; i++) {
-          rolemsg += `\n${i + 1} - ${role[i].name}`
-        }
-        message.channel.send(`There are multiple roles found with name '${args[2]}', which one would you like to use? ${rolemsg}`)
-        await message.channel.awaitMessages(m => m.author.id === message.author.id, { time:15000, max: 1, errors:['time'] }).then(collected => {
-          if (Number(collected.first().content) > role.length) return message.channel.send(":x: | Invalid role number. Command cancelled.");
-          role = role[collected.first().content - 1]
-        }).catch(err => {
-          return message.channel.send(":x: | Command cancelled.")
-        });
-      } else {
-        role = role[0] || role
-      }
-            
+      let role = await find.role(bot, message, args[2])
+      if (!role) return message.channel.send(":x: | You didn't provide a true role.");
+
       if (!role.editable) return message.channel.send(":x: | I can't manage this role. Sorry.");
       if (message.member.roles.highest.position <= message.guild.roles.cache.find(grole => grole.name.toLowerCase() == role.name.toLowerCase()).position && message.guild.owner.id != message.author.id) return message.channel.send(":x: | You can't manage this role.");
       if (message.guild.members.cache.get(user.id).roles.cache.has(role.id)) return message.channel.send(":x: | This user already has this role.");
       if (message.guild.members.cache.get(user.id).roles.highest.position > message.guild.members.cache.get(message.author.id).roles.highest.position && message.guild.owner.id != message.author.id) return message.channel.send(":x: | You can't manage this user.");
-      
+
       if (args[1].toLowerCase() === "mass") {
         let count = 0;
         message.guild.members.cache.forEach(member => {
@@ -70,42 +48,21 @@ module.exports = {
         }).catch(err => {
           message.channel.send(`An error occured: ${err}`);
         });
-      }     
+      }
     } else if (args[0].toLowerCase() === "remove") {
       //Remove a role from user
-      let user = message.mentions.users.first() ? message.mentions.users.first() 
-      : (bot.users.cache.get(args[1]) ? bot.users.cache.get(args[1])
-      : (bot.users.cache.filter(user => user.username.includes(args[1])).first() ? bot.users.cache.filter(user => user.username.includes(args[1])).first()
-      : null))
-      if (user === null) return message.channel.send(":x: | You didn't provide a true user.");
-      
+      let user = await find.guildMember(bot, message, args[1])
+      if (!user) return message.channel.send(":x: | You didn't provide a true user.");
+
       //Find role
-      let role = message.mentions.roles.first() ? message.mentions.roles.first()
-      : (message.guild.roles.cache.get(args[2]) ? message.guild.roles.cache.get(args[2])
-      : (message.guild.roles.cache.filter(role => role.name.includes(args[2])).size >= 1 ? message.guild.roles.cache.filter(role => role.name.includes(args[2])).array()
-      : null))
-      
-      if (role === null) return message.channel.send(":x: | You didn't provide a true role.");
-      if (role.length > 1) {
-        let rolemsg = "";
-        for (let i = 0; i < role.length; i++) {
-          rolemsg += `\n${i + 1} - ${role[i].name}`
-        }
-        message.channel.send(`There are multiple roles found with name '${args[2]}', which one would you like to use? ${rolemsg}`)
-        await message.channel.awaitMessages(m => m.author.id === message.author.id, { time:15000, max: 1, errors:['time'] }).then(collected => {
-          if (Number(collected.first().content) > role.length) return message.channel.send(":x: | Invalid role number. Command cancelled.");
-          role = role[collected.first().content - 1]
-        }).catch(err => {
-          return message.channel.send(":x: | Command cancelled.")
-        });
-      } else {
-        role = role[0]  || role
-      }
-      
+      let role = await find.role(bot, message, args[2])
+      if (!role) return message.channel.send(":x: | You didn't provide a true role.");
+
+      if (!role.editable) return message.channel.send(":x: | I can't manage this role. Sorry.");
       if (!message.guild.members.cache.get(user.id).roles.cache.has(role.id)) return message.channel.send(":x: | This user doesn't have that role.");
       if (message.member.roles.highest.position <= message.guild.roles.cache.find(grole => grole.name.toLowerCase() == role.name.toLowerCase()).position && message.guild.owner.id != message.author.id) return message.channel.send(":x: | You can't manage this role.");
       if (message.guild.members.cache.get(user.id).roles.highest.position > message.guild.members.cache.get(message.author.id).roles.highest.position && message.guild.owner.id != message.author.id) return message.channel.send(":x: | You can't manage this user.");
-      
+
       message.guild.members.cache.get(user.id).roles.remove(role, {reason: `Requested by ${message.author.tag}`}).then(() => {
         message.channel.send({embed: {description:`:white_check_mark: | ${role} has been removed from ${user}'s roles.`}});
       }).catch(err => {
@@ -113,38 +70,20 @@ module.exports = {
       });
     } else if (args[0].toLowerCase() === "delete") {
       //Delete a role
-      
+
       //Find role
-      let role = message.mentions.roles.first() ? message.mentions.roles.first()
-      : (message.guild.roles.cache.get(args[1]) ? message.guild.roles.cache.get(args[1])
-      : (message.guild.roles.cache.filter(role => role.name.includes(args[1])).size > 1 ? message.guild.roles.cache.filter(role => role.name.includes(args[1])).array()
-      : null))
-      
-      if (role === null) return message.channel.send(":x: | You didn't provide a true role.");
-      if (role.length > 1) {
-        let rolemsg = "";
-        for (let i = 0; i < role.length; i++) {
-          rolemsg += `\n${i + 1} - ${role[i].name}`
-        }
-        message.channel.send(`There are multiple roles found with name '${args[1]}', which one would you like to use? ${rolemsg}`)
-        await message.channel.awaitMessages(m => m.author.id === message.author.id, { time:15000, max: 1, errors:['time'] }).then(collected => {
-          if (Number(collected.first().content) > role.length) return message.channel.send(":x: | Invalid role number. Command cancelled.");
-          role = role[collected.first().content - 1]
-        }).catch(err => {
-          return message.channel.send(":x: | Command cancelled.")
-        });
-      } else {
-        role = role[0] || role
-      }
-      
+      let role = await find.role(bot, message, args[1])
+      if (!role) return message.channel.send(":x: | You didn't provide a true role.");
+
       if (!role.editable) return message.channel.send(":x: | I can't manage this role. Sorry.");
       if (message.member.roles.highest.position <= message.guild.roles.cache.find(grole => grole.name.toLowerCase() == role.name.toLowerCase()).position && message.guild.owner.id != message.author.id) return message.channel.send(":x: | You can't manage this role.");
-      
+
       message.guild.roles.cache.get(role.id).delete(`Requested by ${message.author.tag} `).then(() => {
         message.channel.send({embed: {description:`:white_check_mark: | ${role.name} has been removed from the server successfully.`}});
       }).catch(err => {
         message.channel.send(`An error occured: ${err}`);
       });
+
     } else if (args[0].toLowerCase() === "new") {
       //Adds a new role
       if (!args[1]) {
@@ -155,7 +94,7 @@ module.exports = {
         let color = false
         let mention = false
         let hoist = false
-        
+
         args.shift()
         args.forEach(arg => {
           name = arg.indexOf("name:") != -1 ? arg.slice(arg.indexOf("name:") + 5) : name
@@ -163,12 +102,12 @@ module.exports = {
           mention = arg.indexOf("mention:") != -1 ? arg.slice(arg.indexOf("mention:") + 8) : mention
           hoist = arg.indexOf("seperate:") != -1 ? arg.slice(arg.indexOf("seperate:") + 9) : hoist
         })
-        
+
         if (!name) return message.channel.send(":x: | You need a name for the role! To see the right format use the `g!role new` command");
         if (!/^#[0-9A-F]{6}$/i.test(color) && color) return message.channel.send(":x: | You didnt provide a true hex color.");
         if (mention != "true" && mention != "false" && mention) return message.channel.send(":x: | You didnt provide a true option for mention. `true, false`")
         if (hoist != "true" && hoist != "false" && hoist) return message.channel.send(":x: | You didnt provide a true option for seperate. `true, false`")
-        
+
         message.guild.roles.create({
           data: {
             name: name,
@@ -180,35 +119,16 @@ module.exports = {
           return message.channel.send({embed: {description: `:white_check_mark: | ${role} role has been successfully created.`}})
         })
       }
-      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     } else if (args[0].toLowerCase() === "edit") {
       //Edits a role
       //Find role
-      let role = message.mentions.roles.first() ? message.mentions.roles.first()
-      : (message.guild.roles.cache.get(args[1]) ? message.guild.roles.cache.get(args[1])
-      : (message.guild.roles.cache.filter(role => role.name.includes(args[1])).size > 1 ? message.guild.roles.cache.filter(role => role.name.includes(args[1])).array()
-      : null))
-      
-      if (role === null) return message.channel.send(":x: | You didn't provide a true role.");
-      if (role.length > 1) {
-        let rolemsg = "";
-        for (let i = 0; i < role.length; i++) {
-          rolemsg += `\n${i + 1} - ${role[i].name}`
-        }
-        message.channel.send(`There are multiple roles found with name '${args[1]}', which one would you like to use? ${rolemsg}`)
-        await message.channel.awaitMessages(m => m.author.id === message.author.id, { time: 15000, max: 1, errors:['time'] }).then(collected => {
-          if (Number(collected.first().content) > role.length) return message.channel.send(":x: | Invalid role number. Command cancelled.");
-          role = role[collected.first().content - 1]
-        }).catch(err => {
-          return message.channel.send(":x: | Command cancelled.")
-        });
-      } else {
-        role = role[0] || role
-      }
-        
+      let role = await find.role(bot, message, args[1])
+      if (!role) return message.channel.send(":x: | You didn't provide a true role.");
+
       if (!role.editable) return message.channel.send(":x: | I can't manage this role. Sorry.");
       if (message.member.roles.highest.position <= message.guild.roles.cache.find(grole => grole.name.toLowerCase() == role.name.toLowerCase()).position && message.guild.owner.id != message.author.id) return message.channel.send(":x: | You can't manage this role.");
-      
+
       if (!args[2]) {
         //Error
         return message.channel.send(":x: | You have to provide a option. `color, seperated/hoisted, mentionable, permissions`")
@@ -257,11 +177,11 @@ module.exports = {
             permissions.add(role.permissions.bitfield)
             role.setPermissions(permissions).then(() => {
               return message.channel.send({embed: {description:`:white_check_mark: | ${role}'s permissions have been updated.`}})
-            })           
-          } 
+            })
+          }
           catch(err) {
             return message.channel.send(":x: | Invalid permission flag, command cancelled.")
-          }  
+          }
         } else if (args[3].toLowerCase() === "remove") {
           //Remove permission
           if (!args[4]) return message.channel.send(`:x: | You need to provide a permission flag, see them in \`${prefix}role edit <role> permissions flags\`.`)
@@ -272,8 +192,8 @@ module.exports = {
             permissions = role.permissions.remove(permissions)
             role.setPermissions(permissions).then(() => {
               return message.channel.send({embed: {description:`:white_check_mark: | ${role}'s permissions have been updated.`}})
-            })       
-          } 
+            })
+          }
           catch(err) {
             return message.channel.send(":x: | Invalid permission flag, command cancelled.")
           }
