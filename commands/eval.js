@@ -32,13 +32,7 @@ module.exports = {
 
       if (output.includes(bot.token)) return msg.edit("Not today.")
 
-      if (output.length < 1000) {
-        const embed = new Discord.MessageEmbed()
-          .addField("Input", `\`\`\`js\n${code}\`\`\``)
-          .addField("Output", `\`\`\`js\n${output}\`\`\``)
-          .setColor("#fcfffd");
-        msg.edit("", embed);
-      } else {
+       if (output.length > 1000 || code.length > 1000) {
         hastebin(output, { extension: "txt" }).then(haste => {
           const embed = new Discord.MessageEmbed()
           .setTitle("Output was too long, uploaded to hastebin and logged to console!")
@@ -49,6 +43,12 @@ module.exports = {
         }).catch(err => {
           console.log("Hastebin error: " + err)
         });
+      } else {
+        const embed = new Discord.MessageEmbed()
+          .addField("Input", `\`\`\`js\n${code}\`\`\``)
+          .addField("Output", `\`\`\`js\n${output}\`\`\``)
+          .setColor("#fcfffd");
+        msg.edit("", embed);
       }
     } catch (e) {
       msg.edit(`Error \`\`\`js\n${e}\`\`\``);
