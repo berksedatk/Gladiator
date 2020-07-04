@@ -132,9 +132,9 @@ module.exports = {
                   if (levelroles[0].lvl <= member.level) {
                     //Add xp role
                     const lvlrole = levelroles.shift()
-
+                    console.log(`${lvlrole} - ${member.level}`)
                     if (!message.guild.members.cache.get(message.author.id).roles.cache.has(lvlrole.role)) {
-
+                      console.log(`${member.level} - ${lvlrole.role}`)
                       message.guild.members.cache.get(message.author.id).roles.add(lvlrole.role).then(() => {
                        levelupmessage += `\nYou have been rewarded with the role <@&${guild.levelroles.get(lvlrole.role)}>!`;
                       }).catch(() => {
