@@ -131,13 +131,13 @@ module.exports = {
                 while (levelroles.length != 0) {
                   
                   if (levelroles[0].lvl <= member.level) {
-                    //Add xp role
+                    //Add lvl role
                     const lvlrole = levelroles.shift()
                     
                     if (!message.guild.members.cache.get(message.author.id).roles.cache.has(lvlrole.role)) {
                       
                       message.guild.members.cache.get(message.author.id).roles.add(lvlrole.role).then(() => {
-                       levelupmessage += `\nYou have been rewarded with the role <@&${guild.levelroles.get(lvlrole.role)}>!`;
+                       levelupmessage += `\nYou have been rewarded with the role <@&${lvlrole.role}>!`;
                        if (guild.settings.levelup.send) {
                          guild.settings.levelup.channel === "default" ? message.reply({embed: {description: levelupmessage }}) : bot.channels.cache.get(guild.settings.levelup.channel).send(`${message.author}`,{embed: {description: levelupmessage }});
                        }
