@@ -127,12 +127,13 @@ module.exports = {
                 })
 
                 levelroles.sort((a, b) => b.lvl - a.lvl)
-               console.log(`${levelroles} - ${member.level}`)
-                 while (levelroles.length != 0) {
+               
+                while (levelroles.length != 0) {
+                  console.log(`${levelroles} - ${member.level}`)
                   if (levelroles[0].lvl <= member.level) {
                     //Add xp role
                     const lvlrole = levelroles.shift()
-                    console.log(`${lvlrole} - ${member.level}`)
+                    console.log(`${lvlrole.lvl} - ${lvlrole.role} - ${member.level}`)
                     if (!message.guild.members.cache.get(message.author.id).roles.cache.has(lvlrole.role)) {
                       console.log(`${member.level} - ${lvlrole.role}`)
                       message.guild.members.cache.get(message.author.id).roles.add(lvlrole.role).then(() => {
