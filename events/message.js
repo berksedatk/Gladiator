@@ -123,19 +123,19 @@ module.exports = {
                 let levelroles = []
                 
                 guild.levelroles.forEach((role, level) => {
-                  levelroles.push({role: role, lvl: member.lvl})
+                  levelroles.push({role: role, lvl: level})
                 })
 
                 levelroles.sort((a, b) => b.lvl - a.lvl)
                
                 while (levelroles.length != 0) {
-                  console.log(`${levelroles[0].lvl} - ${levelroles[0].role} -> ${member.level}`)
+                  
                   if (levelroles[0].lvl <= member.level) {
                     //Add xp role
                     const lvlrole = levelroles.shift()
-                    console.log(`${lvlrole.lvl} - ${lvlrole.role} - ${member.level}`)
+                    
                     if (!message.guild.members.cache.get(message.author.id).roles.cache.has(lvlrole.role)) {
-                      console.log(`${member.level} - ${lvlrole.role}`)
+                      
                       message.guild.members.cache.get(message.author.id).roles.add(lvlrole.role).then(() => {
                        levelupmessage += `\nYou have been rewarded with the role <@&${guild.levelroles.get(lvlrole.role)}>!`;
                       }).catch(() => {
