@@ -119,12 +119,35 @@ module.exports = {
               //Level up
               if (rawxp > multiplier) {
               let levelupmessage = `${message.author} You leveled up! Now you're level ${member.level + 1}`;
+               
+                let levelroles = []
+                
+                guild.levelroles.forEach((role, level) => {
+                  levelroles.push({role: role, lvl: member.lvl})
+                })
 
-                //Level Roles
-                if (guild.levelroles.get(member.level + 1)) {
-                  message.guild.members.cache.get(message.author.id).roles.add(guild.levelroles.get(member.level + 1));
-                  levelupmessage += `\nYou have been rewarded with the role <@&${guild.levelroles.get(member.level + 1)}>!`;
-                }
+                levelroles.sort((a, b) => b.lvl - a.lvl)
+               
+                 while (levelroles.length != 0) {
+                  if (levelroles[0].lvl =< member.level) {
+                    //Add xp role
+                    const lvlrole = levelroles.shift()
+
+                    if (!message.guild.members.cache.get(message.author.id).roles.cache.has(lvlrole.role)) {
+
+                      message.guild.members.cache.get(message.author.id).roles.add(lvlrole.role).then(() => {
+                       levelupmessage += `\nYou have been rewarded with the role <@&${guild.levelroles.get(lvlrole.role)}>!`;
+                      }).catch(() => {
+                        levelupmessage += `Could not reward the user because role with the id ${lvlrole.role} was removed from the server or bot does not have permission to add the user the role, if the role was removed please contract a server manager to remove the xp role from list via \`g!leveledroles xp remove ${lvlrole.xp}\` command.`
+                      })
+
+                    }
+
+                    break;
+                  } else {
+                    levelroles.shift()
+                  }
+                 }
 
                 //Sending message
                 if (guild.settings.levelup.send) {
