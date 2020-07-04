@@ -129,7 +129,7 @@ module.exports = {
                 levelroles.sort((a, b) => b.lvl - a.lvl)
                 
                 while (levelroles.length != 0) {
-                  console.log(levelroles[0].lvl)
+                  
                   if (levelroles[0].lvl <= member.level) {
                     //Add xp role
                     const lvlrole = levelroles.shift()
@@ -138,6 +138,9 @@ module.exports = {
                       
                       message.guild.members.cache.get(message.author.id).roles.add(lvlrole.role).then(() => {
                        levelupmessage += `\nYou have been rewarded with the role <@&${guild.levelroles.get(lvlrole.role)}>!`;
+                       if (guild.settings.levelup.send) {
+                         guild.settings.levelup.channel === "default" ? message.reply({embed: {description: levelupmessage }}) : bot.channels.cache.get(guild.settings.levelup.channel).send(`${message.author}`,{embed: {description: levelupmessage }});
+                       }
                       }).catch(() => {
                         levelupmessage += `Could not reward the user because role with the id ${lvlrole.role} was removed from the server or bot does not have permission to add the user the role, if the role was removed please contract a server manager to remove the xp role from list via \`g!leveledroles xp remove ${lvlrole.xp}\` command.`
                       })
@@ -149,12 +152,7 @@ module.exports = {
                     levelroles.shift()
                   }
                  }
-
-                //Sending message
-                if (guild.settings.levelup.send) {
-                  guild.settings.levelup.channel === "default" ? message.reply({embed: {description: levelupmessage }}) : bot.channels.cache.get(guild.settings.levelup.channel).send(`${message.author}`,{embed: {description: levelupmessage }});
-                }
-
+               
                 guild.members.set(message.author.id, {
                   username: message.author.tag,
                   id: message.author.id,
