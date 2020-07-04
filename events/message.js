@@ -127,9 +127,9 @@ module.exports = {
                 })
 
                 levelroles.sort((a, b) => b.lvl - a.lvl)
-               
+                
                 while (levelroles.length != 0) {
-                  
+                  console.log(levelroles[0].lvl)
                   if (levelroles[0].lvl <= member.level) {
                     //Add xp role
                     const lvlrole = levelroles.shift()
