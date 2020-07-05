@@ -36,7 +36,7 @@ module.exports = {
       return message.channel.send({embed: {description: `Natural colors (NCol) is an initiative from W3Schools. The system is designed to make it easier to select HTML colors. NCol specifies colors using a color letter with a number to specify the distance (in percent) from the color. R30 means 30% away from Red , moving towards Yellow. (In other words: Red with 30% Yellow) Here are some examples: \n\n**R19, 14%, 5%\nNCol R19: \n-R => Red\n-19 => 19% to Yellow\nWhiteness: 14%\nBlackness: 5%**`}})
     } else {
       let color = args.join(" ")
-      if (!w3color(color)) return message.channel.send(":x: | You didn't provide a true color.\n A color can be name, hex, rgb, hsl, hwb, cmyk or a ncol. To get into details please use the command with the color type.")
+      if (!w3color(color).valid) return message.channel.send(":x: | You didn't provide a true color.\n A color can be name, hex, rgb, hsl, hwb, cmyk or a ncol. To get into details please use the command with the color type.")
 
       let name = w3color(color).toName()
       let rgb = w3color(color).toRgbString()
