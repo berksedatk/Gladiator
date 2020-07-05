@@ -1,10 +1,6 @@
 const Discord = require("discord.js");
 const find = require("../find.js");
 
-function colorToHexString(dColor) {
-    return '#' + ("000000" + (((dColor & 0xFF) << 16) + (dColor & 0xFF00) + ((dColor >> 16) & 0xFF)).toString(16)).slice(-6);
-}
-
 function prettyString(string) {
  return string.replace(/_/g, " ").replace(/guild/gi, "Server").replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();})
 }
@@ -44,7 +40,7 @@ module.exports = {
       .addField("Position", `${role.rawPosition}/${message.guild.roles.cache.size - 1}`, true)
       .addField("Member Count", count, true)
       .addField("Bot Role", String(role.managed)[0].toUpperCase() + String(role.managed).substr(1), true)
-      .addField("Color(Hex) Code", colorToHexString(role.color), true)
+      .addField("Color(Hex) Code", '#' + role.color.toString(), true)
       .addField("Created At", role.createdAt.toUTCString())
       .addField("Permissions", `${perms.join(', ')}`, true);
     return message.channel.send(roleEmbed);
