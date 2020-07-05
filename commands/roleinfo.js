@@ -40,7 +40,7 @@ module.exports = {
       .addField("Position", `${role.rawPosition}/${message.guild.roles.cache.size - 1}`, true)
       .addField("Member Count", count, true)
       .addField("Bot Role", String(role.managed)[0].toUpperCase() + String(role.managed).substr(1), true)
-      .addField("Color(Hex) Code", '#' + role.color.toString(), true)
+      .addField("Color(Hex) Code", '#' + role.color.toString(16), true)
       .addField("Created At", role.createdAt.toUTCString())
       .addField("Permissions", `${perms.join(', ')}`, true);
     return message.channel.send(roleEmbed);
