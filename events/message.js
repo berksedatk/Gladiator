@@ -25,7 +25,10 @@ function factorial(num) {
 module.exports = {
   async execute(bot, message, db) {
     let blacklisted = false;
-    if (message.author.bot || config.blacklisted.includes(message.guild.id)) return;
+    if (message.author.bot) return;
+    if (message.channel.type === "text") {
+      if (config.blacklisted.includes(message.guild.id)) return;
+    }
     //Database
     if (message.content.length < 500 && message.content.length > 10 && message.channel.type != "dm") {
       Guild.findOne({ guildID: message.guild.id }, async (err, guild) => {
@@ -119,23 +122,23 @@ module.exports = {
               //Level up
               if (rawxp > multiplier) {
               let levelupmessage = `${message.author} You leveled up! Now you're level ${member.level + 1}`;
-               
+
                 let levelroles = []
-                
+
                 guild.levelroles.forEach((role, level) => {
                   levelroles.push({role: role, lvl: level})
                 })
 
                 levelroles.sort((a, b) => b.lvl - a.lvl)
-                
+
                 while (levelroles.length != 0) {
-                  
+
                   if (levelroles[0].lvl <= member.level) {
                     //Add lvl role
                     const lvlrole = levelroles.shift()
-                    
+
                     if (!message.guild.members.cache.get(message.author.id).roles.cache.has(lvlrole.role)) {
-                      
+
                       message.guild.members.cache.get(message.author.id).roles.add(lvlrole.role).then(() => {
                        levelupmessage += `\nYou have been rewarded with the role <@&${lvlrole.role}>!`;
                        if (guild.settings.levelup.send) {
@@ -152,7 +155,7 @@ module.exports = {
                     levelroles.shift()
                   }
                  }
-               
+
                 guild.members.set(message.author.id, {
                   username: message.author.tag,
                   id: message.author.id,
