@@ -171,6 +171,7 @@ module.exports = {
           //Add permission
           if (!args[4]) return message.channel.send(`:x: | You need to provide a permission flag, see them in \`${prefix}role edit <role> permissions flags\`.`)
           const permargs = args.splice(4)
+          if (!message.member.permissions.has(permargs)) return message.channel.send(":x: | You don't have that permission to add it to the role.");
           if (role.permissions.has(permargs)) return message.channel.send(':x: | The role has this permission already!');
           try {
             let permissions = new Discord.Permissions(permargs)
@@ -186,6 +187,7 @@ module.exports = {
           //Remove permission
           if (!args[4]) return message.channel.send(`:x: | You need to provide a permission flag, see them in \`${prefix}role edit <role> permissions flags\`.`)
           const permargs = args.splice(4)
+          if (!message.member.permissions.has(permargs)) return message.channel.send(":x: | You don't have that permission to add it to the role.");
           if (!role.permissions.has(permargs)) return message.channel.send(':x: | The role does not have this permission.');
           try {
             let permissions = new Discord.Permissions(permargs)
