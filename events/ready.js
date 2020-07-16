@@ -10,7 +10,6 @@ module.exports = {
   execute(bot) {
 
     app.get('/', (req, res) => res.redirect('https://gladiatorbot.glitch.me/'));
-    server.listen(5000, () => console.log('Listening on port 5000'));
 
     bot.user.setActivity(`with Dolphins. | gb!help`, {
       type: "PLAYING"
