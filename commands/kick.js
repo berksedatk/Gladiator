@@ -11,7 +11,7 @@ module.exports = {
   usage: "<user> <reason>",
   cooldown: 5,
   guildOnly: "true",
-  reqPermissions: ["KICK_MEMBERS","BAN_MEMBERS","MANAGE_GUILD"],
+  reqPermissions: ["KICK_MEMBERS"],
   async execute(bot, message, args) {
     
     if (!args[0]) return message.channel.send(":x: | You didn't provided a user.");
