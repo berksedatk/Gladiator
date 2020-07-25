@@ -8,6 +8,9 @@ module.exports = async (bot, server) => {
   });
 
   dbl.webhook.on('ready', async hook => {
+    setInterval(() => {
+        dbl.postStats(bot.guilds.cache.size);
+    }, 1800000);
 		console.log(`Top.gg webhook running at http://${hook.hostname}:${hook.port}${hook.path}`);
 	});
 
