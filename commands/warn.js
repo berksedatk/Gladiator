@@ -18,7 +18,7 @@ module.exports = {
     if (!user) return message.channel.send(":x: | You didn't provide a true user.");
 
     if (user.id === message.author.id) return message.channel.send(":x: | You cannot warn yourself!");
-    if (message.guild.members.cache.get(user.id).roles.highest.position >= message.member.roles.highest.position && message.guild.owner.id != message.author.id) return message.channel.send(":x: | You can't mute this member, they are too powerful for you.")
+    if (message.guild.members.cache.get(user.id).roles.highest.position >= message.member.roles.highest.position && message.guild.owner.id != message.author.id) return message.channel.send(":x: | You can't warn this member, they are too powerful for you.")
 
     args.shift();
     let reason = args.join(" ");
