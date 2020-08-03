@@ -203,7 +203,7 @@ module.exports = {
       .setFooter("Requested by " + message.author.username, message.author.avatarURL())
       .addField("Discord Join Date", `${user.user.createdAt.toUTCString()}\n(${prettyms(Date.now() - user.user.createdTimestamp, { verbose: true })} ago)`)
       .addField("Guild Join Date", `${user.joinedAt.toUTCString()}\n(${prettyms(Date.now() - user.joinedTimestamp, { verbose: true })} ago)`, true)
-      .addField("Join Position",`${joinposition + 1}.`, true)
+      .addField("Join Position",`#${joinposition + 1}`, true)
       .addField("Nickname", user.nickname ? user.nickname : "Nothing")
       .addField("Status", platforms, true)
       .addField("Presence", presenceMes, true)
