@@ -1,38 +1,10 @@
 const mongoose = require('mongoose');
 
 const guildSchema = new mongoose.Schema({
-  _id: mongoose.Schema.Types.ObjectId,
   guildName: String,
   guildID: String,
   blacklisted: Boolean,
-  settings: {  
-    join: {
-      role: String,
-      botrole: String,
-      autorole: Boolean,
-      channel: String,
-      message: String,
-      send: Boolean
-    },
-    levelup: {
-      message: String,
-      channel: String,
-      send: Boolean
-    },    
-    blacklist: {
-      list: [],
-      enabled: Boolean
-    },
-  },
   members: {
-    type: Map,
-    of: Object
-  },
-  levelroles: {
-    type: Map,
-    of: Object
-  },
-  xproles: {
     type: Map,
     of: Object
   },
@@ -43,7 +15,113 @@ const guildSchema = new mongoose.Schema({
   reactionroles: {
     type: Map,
     of: Object
+  },
+  logging: {
+    type: Map,
+    of: Object
+  },
+  overridePermissions: {
+    denied: {
+      users: {
+        type: Map,
+        of: Object
+      },
+      roles: {
+        type: Map,
+        of: Object
+      },
+      channels: {
+        type: Map,
+        of: Object
+      }
+    },
+    allowed: {
+      users: {
+        type: Map,
+        of: Object
+      },
+      roles: {
+        type: Map,
+        of: Object
+      },
+      channels: {
+        type: Map,
+        of: Object
+      }
+    },
+    cooldown: {
+      type: Map,
+      of: String
+    }
+  },
+  settings: {
+    join: {
+      autorole: {
+        enabled: Boolean,
+        botroles: [],
+        userroles: []
+      },
+      message: {
+        text: {
+          enabled: Boolean,
+          message: String
+        },
+        image: {
+          enabled: Boolean,
+          text: String
+        },
+        channel: String
+      }
+    },
+    leveling: {
+      roles: {
+        level: {
+          type: Map,
+          of: Object
+        },
+        xp: {
+          type: Map,
+          of: Object
+        }
+      },
+      levelup: {
+        send: Boolean,
+        embed: Boolean,
+        message: String,
+        channel: String
+      },
+      reward: {
+        xp: {
+          send: Boolean,
+          embed: Boolean,
+          message: String,
+          channel: String
+        },
+        level: {
+          send: Boolean,
+          embed: Boolean,
+          message: String,
+          channel: String
+        }
+      },
+      options: {
+        delay: Number,
+        xp: {
+          max: Number,
+          min: Number
+        },
+        filter: {
+          maxLength: Number,
+          minLength: Number,
+          repeative: Boolean
+        }
+      }
+    },
+    blacklist: {
+      commands: [],
+      channels: []
+    }
   }
 });
 
-module.exports = mongoose.model("guildSchema", guildSchema)
+module.exports = mongoose.model("guilds", guildSchema);

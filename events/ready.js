@@ -1,70 +1,90 @@
+const config = require('../config.json');
+const mongoose = require('mongoose');
+
 const Mute = require("../schemas/mute.js");
-const Guild = require("../schemas/guild.js");
-const mongoose = require("mongoose");
-const express = require('express');
-const http = require('http');
-const app = express();
-const server = http.createServer(app);
+const Guild = require('../schemas/guild.js');
 
-module.exports = {
-  execute(bot) {
+module.exports = async client => {
 
-    app.get('/', (req, res) => res.redirect('https://gladiatorbot.glitch.me/'));
+  //DBL
+  const DBL = require('dblapi.js');
+  const dbl = new DBL(process.env.DBL_TOKEN, { webhookPort: 3000, webhookAuth: 'homework' });
 
-    bot.user.setActivity(`with Dolphins. | gb!help`, {
-      type: "PLAYING"
-    });
+  //Stats
+  dbl.postStats(client.guilds.cache.size)
 
-    require("../util/dbl.js")(bot, server);
+  //Voting
+  dbl.webhook.on('ready', hook => {
+    console.log(`Webhook running at http://${hook.hostname}:${hook.port}${hook.path}`);
+  });
 
-    let number = 0;
-    setInterval(function() {
-      if (number == 0) {
-        bot.user.setActivity(`with Dolphins. | g!help`, {
-          type: "PLAYING"
-        });
-        number = 1;
-      } else {
-        bot.user.setActivity(`a sitcom. | g!help`, {
-          type: "WATCHING"
-        });
-        number = 0;
-      }
-    }, 30000)
-
-    setInterval(function() {
-      Mute.find({}, (err, mutes) => {
-        mutes.forEach(mute => {
-          if (mute.time != undefined && Date.now() > mute.time) {
-            mute.delete().then(() => {
-              try {
-                bot.guilds.cache.get(mute.guildID).members.cache.get(mute.userID).roles.remove(mute.role)
-              } catch(err) {
-                console.log(`Could not remove the mute! ${bot.guilds.cache.get(mute.guildID).name} -> ${bot.guilds.cache.get(mute.guildID).members.cache.get(mute.userID).user.tag}`)
-              }
-            })
-          }
-        })
+  dbl.webhook.on('vote', vote => {
+    const user = client.users.cache.get(vote.user)
+    if (user) {
+      client.channels.cache.get("673867340810551342").send({
+        embed: {
+          author: {
+            name: user.tag,
+            icon: user.avatarURL()
+          },
+          description: "Just voted for the bot!",
+          footer: {
+            text: "Vote by using g!vote command."
+          },
+          color: "GOLD",
+          timestamp: Date.now()
+        }
       })
-    }, 5000)
+      user.send("Thanks for voting! You can vote again in 12 hours!").then(() => {
+        console.log(`${user.tag} voted for the bot!`)
+      }).catch(err => {
+        console.log(`${user.tag} voted for the bot! But could not be messaged.`)
+      })
+    } else {
+      client.channels.cache.get("673867340810551342").send({
+        embed: {
+          author: {
+            name: vote.user,
+          },
+          description: "Just voted for the bot!",
+          footer: {
+            text: "Vote by using g!vote command."
+          },
+          color: "GOLD",
+          timestamp: Date.now()
+        }
+      })
+      console.log(`${user.tag} voted for the bot! But could not find it user cache.`)
+    }
+  });
 
-    Guild.find({}, (err, guilds) => {
-      guilds.forEach(guild => {
-        if (guild.reactionroles) {
-          guild.reactionroles.forEach((messages, channel) => {
-            Object.keys(messages).forEach(message => {
-              let messageids = Object.keys(guild.reactionroles.get(channel))
-              messageids.forEach(async messageid => {
-                await bot.channels.cache.get(channel).messages.fetch(messageid)
-              })
-            })
+  //User activity
+  client.user.setActivity("Google Chrome | g!help", {
+    type: "PLAYING"
+  });
+
+  //Mutes
+  setInterval(function() {
+    Mute.find({}, (err, mutes) => {
+      mutes.forEach(mute => {
+        if (mute.time != undefined && Date.now() > mute.time) {
+          mute.delete().then(() => {
+            try {
+              client.guilds.cache.get(mute.guildID).members.cache.get(mute.userID).roles.remove(mute.role)
+            } catch(err) {
+              console.log(`Could not remove the mute! ${client.guilds.cache.get(mute.guildID).name} -> ${client.guilds.cache.get(mute.guildID).members.cache.get(mute.userID).user.tag}`)
+            }
           })
         }
       })
     })
+  }, 10000)
 
-    console.log("---------------------------------------------")
-    console.log("Bot is online.")
-    console.log(`Discord Client: ${bot.user.tag} \nServer count: ${bot.guilds.cache.size} \nUser count: ${bot.users.cache.size}`);
-  }
-}
+  //Client info
+  console.log(`Discord - Bot is ready.
+  Client User: ${client.user.tag}
+  Guild Count: ${client.guilds.cache.size}
+  User Count: ${client.users.cache.size}`);
+
+  client.ready = true
+};

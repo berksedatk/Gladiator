@@ -1,0 +1,127 @@
+const Discord = require("discord.js");
+const Guild = require("../../schemas/guild.js");
+const find = require("../../find.js");
+const w3color = require("../../w3color.js");
+
+function factorial(num) {
+  if (num === 0) {
+    return 0;
+} if (num === 1)
+    return 1;
+  for (var i = num - 1; i >= 1; i--) {
+    num += i;
+  }
+  return num;
+}
+
+module.exports = {
+  name: "profile",
+  category: "Leveling",
+  description: "List leveling profile info",
+  aliases: ["level","xp","p"],
+  usage: "[user - color]",
+  examples: "g!profile color #B00B69\ng!profile @VeryCoolDude6969",
+  cooldown: 5,
+  guildOnly: true,
+  async execute(bot, message, args) {
+    let user;
+    if (!args[0]) {
+      user = message.author
+      profile(user)
+    } else if (args[0].toLowerCase() === "color") {
+      args.shift()
+      let color = args.join()
+      if (color.length < 1) return message.channel.send("<:cross:724049024943915209> | You didn't provide a color to set for your profile")
+      if (!w3color(color).valid) return message.channel.send("<:cross:724049024943915209> | You didn't provide a true color.\n A color can be name, hex, rgb, hsl, hwb, cmyk or a ncol.")
+
+      Guild.findOne({ guildID: message.guild.id }, (err, guild) => {
+        if (err) return message.channel.send(`An error occured: ${err}`);
+        if (!guild) return message.channel.send("There was an error while fetching server database, please contact a bot dev! (https://discord.gg/tkR2nTf)")
+        let member = guild.members.get(message.author.id)
+        if (!member) {
+          member = guild.members.set(message.author.id, {
+            username: message.author.tag,
+            id: message.author.id,
+            xp: "0",
+            level: "0",
+            color: w3color(color).toHexString(),
+            lastxpmessage: 0
+          })
+          guild.save().then(() => {return message.channel.send(`<:tick:724048990626381925> | Your profile color has been changed to ${w3color(color).toHexString()}`)}).catch(err => message.channel.send(`An error occured: ${err}`));
+        } else {
+          member = guild.members.set(message.author.id, {
+            username: message.author.tag,
+            id: message.author.id,
+            xp: member.xp,
+            level: member.level,
+            color: w3color(color).toHexString(),
+            lastxpmessage: member.lastxpmessage
+          })
+          guild.save().then(() => {return message.channel.send(`<:tick:724048990626381925> | Your profile color has been changed to ${w3color(color).toHexString()}`)}).catch(err => message.channel.send(`An error occured: ${err}`));
+        }
+      })
+    } else {
+      user = await find.guildMember(bot, message, args[0])
+      if (!user) return message.channel.send("<:cross:724049024943915209> | You didn't provide a true user.")
+      user = user.user
+      profile(user)
+    }
+    function profile(user) {
+      Guild.findOne({ guildID: message.guild.id }, (err, guild) => {
+        if (err) return message.channel.send(`An error occured: ${err}`);
+        if (!guild) return message.channel.send("There was an error while fetching server database, please contact a bot dev! (https://discord.gg/tkR2nTf)")
+        if (guild) {
+          let member = guild.members.get(user.id)
+          if (!member) {
+            guild.members.set(user.id, {
+              username: user.tag,
+              id: user.id,
+              xp: "0",
+              level: "0",
+              color: "#add8e6",
+              lastxpmessage: 0
+            })
+            member = {
+              username: user.tag,
+              id: user.id,
+              xp: "0",
+              level: "0",
+              color: "#add8e6",
+              lastxpmessage: 0
+            }
+            guild.save().catch(err => message.channel.send(`An error occured: ${err}`));
+          }
+
+          let users = [];
+          guild.members.forEach(membere => {
+            if (membere.xp > 0) {
+              const lastxp = Number(membere.xp) + factorial(Number(membere.level)) * 560
+              users.push({
+                user: membere.username,
+                xp: lastxp,
+              });
+            }
+          });
+
+          users.sort((a, b) => b.xp - a.xp);
+          let rank;
+          for (let i = 0; i < users.length; i++) {
+            if (users[i].user === member.username) rank = i + 1
+          }
+
+          let profileEmbed = new Discord.MessageEmbed()
+          .setAuthor(`${member.username}'s Profile`, user.avatarURL())
+          .setColor(member.color.toUpperCase())
+          .setTimestamp()
+          .setFooter(`Requested by ${message.author.tag}`, message.author.avatarURL())
+          .addField("Level", member.level, true)
+          .addField("Server Rank", `#${rank}`,true)
+          .addField("Total Xp", `${Number(member.xp) + factorial(Number(member.level)) * 560} xp`)
+          .addField("Xp for next level", `${member.xp}/${(Number(member.level) + 1) * 560}`,true)
+          .addField("Profile Color", member.color,true)
+          message.channel.send(profileEmbed)
+        }
+      })
+    }
+  }
+};
