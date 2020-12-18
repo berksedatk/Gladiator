@@ -1,5 +1,5 @@
 const Discord = require("discord.js");
-const find = require("../../find.js");
+const find = require("../../utility/find.js");
 
 function prettyString(string) {
  return string.replace(/_/g, " ").replace(/guild/gi, "Server").replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();})
@@ -14,10 +14,12 @@ module.exports = {
   guildOnly: "true",
   async execute(bot, message, args) {
 
-    if (!args[0]) return message.channel.send("<:cross:724049024943915209> | You didn't provide a role.");
+    if (!args[0]) return message.error("You didn't provide a role.", true, this.usage);
 
     let role = await find.role(bot, message, args[0])
-    if (!role) return message.channel.send("<:cross:724049024943915209> | You didn't provide a true role.");
+    if (!role) return message.error("You didn't provide a true role.", true, this.usage);
+
+    await message.guild.members.fetch()
 
     let count = 0;
     message.guild.members.cache.forEach(member => {

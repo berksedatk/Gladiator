@@ -1,7 +1,7 @@
 const Discord = require("discord.js");
 const Guild = require("../../schemas/guild.js");
 const mongoose = require("mongoose");
-const find = require("../../find.js");
+const find = require("../../utility/find.js");
 
 module.exports = {
   name: "warn",
@@ -13,12 +13,12 @@ module.exports = {
   guildOnly: true,
   reqPermissions: ['MANAGE_MESSAGES'],
   async execute(bot, message, args, db) {
-    if (!args[0]) return message.channel.send("<:cross:724049024943915209> | You didn't provided a user.");
+    if (!args[0]) return message.error("You didn't provided a user.", true, this.usage);
     let user = await find.guildMember(bot, message, args[0])
-    if (!user) return message.channel.send("<:cross:724049024943915209> | You didn't provide a true user.");
+    if (!user) return message.error("You didn't provide a true user.", true, this.usage);
 
-    if (user.id === message.author.id) return message.channel.send("<:cross:724049024943915209> | You cannot warn yourself!");
-    if (message.guild.members.cache.get(user.id).roles.highest.position >= message.member.roles.highest.position && message.guild.owner.id != message.author.id) return message.channel.send(":x: | You can't warn this member, they are too powerful for you.")
+    if (user.id === message.author.id) return message.error("You cannot warn yourself!");
+    if (message.guild.members.cache.get(user.id).roles.highest.position >= message.member.roles.highest.position && message.guild.owner.id != message.author.id) return message.error("You can't warn this member, they are too powerful for you.")
 
     args.shift();
     let reason = args.join(" ");

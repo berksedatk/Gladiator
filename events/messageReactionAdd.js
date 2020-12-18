@@ -3,8 +3,8 @@ const Guild = require('../schemas/guild.js');
 module.exports = async (client, reaction, user) => {
   if (reaction.message.partial) await reaction.message.fetch();
   Guild.findOne({ guildID: reaction.message.guild.id }, (err, guild) => {
-    if (err) return console.log(`There was a error while fetching the database: ${err}`);
-    if (!guild) return console.log(`Database does not exist: ${reaction.message.guild.name}`)
+    if (err) return console.log(`messageReactionAdd: There was a error while fetching the database: ${err}`);
+    if (!guild) require("../utility/addguild.js")(reaction.message.guild);
     if (guild) {
       if (guild.reactionroles.get(reaction.message.channel.id)) {
         Object.entries(guild.reactionroles.get(reaction.message.channel.id)).forEach(messages => {

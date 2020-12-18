@@ -75,7 +75,7 @@ module.exports = {
       pHand != "paper" &&
       pHand != "scissors"
     ) {
-      message.reply("Please choose something you can play with! The command will expire in 15 seconds. \n`rock, paper or scissors`").then(r => r.delete(15000));
+      message.reply("Please choose something you can play with! The command will expire in 15 seconds. \n`rock, paper or scissors`").then(m => m.delete({timeout: 15000}));
       message.channel.awaitMessages(m => (m.author.id === message.author.id && m.content === "rock") || m.content === "paper" || m.content === "scissors",
           {
             max: 1,
@@ -88,7 +88,7 @@ module.exports = {
           return rps(pHand, hand);
         })
         .catch(err => {
-          return message.channel.send(":x: | Command cancelled.");
+          return message.error("Command cancelled.", true, this.usage);
         });
     } else {
       rps(pHand, hand);

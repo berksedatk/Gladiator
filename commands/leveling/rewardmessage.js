@@ -1,4 +1,3 @@
-
 const Discord = require("discord.js");
 const Guild = require("../../schemas/guild.js");
 
@@ -7,7 +6,7 @@ module.exports = {
   category: "Leveling",
   description: "Manage level and xp reward messages",
   aliases: ["rewardmsg"],
-  usage: "[<level - xp> <toggle - channel - message - embed>]",
+  usage: "<level - xp> <toggle - channel - message - embed>",
   examples: "g!levelupmessage\ng!levelupmessage level toggle\ng!levelupmessage xp channel #rewardlogs\ng!levelupmessage level message {{user}} has leveled up to {{level}} and got rewarded with {{role}}! Congrats :tada:\ng!levelupmessage xp embed",
   cooldown: 5,
   guildOnly: true,
@@ -37,62 +36,73 @@ module.exports = {
           if (args[1].toLowerCase() == "toggle") {
             if (guild.settings.leveling.reward.xp.send) {
               guild.settings.leveling.reward.xp.send = false
+              message.guild.settings.leveling.reward.xp.send = false
             } else {
               guild.settings.leveling.reward.xp.send = true
+              message.guild.settings.leveling.reward.xp.send = true
             }
-            guild.save().then(() => message.channel.send(`<:tick:724048990626381925> | Xp reward message has been toggled to \`${guild.settings.leveling.reward.xp.send}\``)).catch(err => message.channel.send("An error occured: " + err))
+            guild.save().then(() => message.success(`Xp reward message has been toggled to \`${guild.settings.leveling.reward.xp.send}\``)).catch(err => message.channel.send("An error occured: " + err))
           } else if (args[1].toLowerCase() == "channel") {
-            if (!args[2]) return message.channel.send("<:cross:724049024943915209> | You didn't provide a channel, or provide `default` to set it to current channel.")
-            if (!message.mentions.channels.first() && args[2].toLowerCase() != "default") return message.channel.send("<:cross:724049024943915209> | You didn't provide a true channel, or provide `default` to set it to current channel.");
+            if (!args[2]) return message.error("You didn't provide a channel, or provide `default` to set it to current channel.", true, "xp channel <channel - default>")
+            if (!message.mentions.channels.first() && args[2].toLowerCase() != "default") return message.error("You didn't provide a true channel, or provide `default` to set it to current channel.");
             guild.settings.leveling.reward.xp.channel = message.mentions.channels.first() ? message.mentions.channels.first().id : args[2].toLowerCase()
-            guild.save().then(() => message.channel.send(`<:tick:724048990626381925> | Xp reward messages now will be sent to ${guild.settings.leveling.reward.xp.channel == "default" ? "the current channel" : `<#${guild.settings.leveling.reward.xp.channel}>`}.`)).catch(err => message.channel.send("An error occured: " + err))
+            message.guild.settings.leveling.reward.xp.channel = message.mentions.channels.first() ? message.mentions.channels.first().id : args[2].toLowerCase()
+            guild.save().then(() => message.success(`Xp reward messages now will be sent to ${guild.settings.leveling.reward.xp.channel == "default" ? "the current channel" : `<#${guild.settings.leveling.reward.xp.channel}>`}.`)).catch(err => message.channel.send("An error occured: " + err))
           } else if (args[1].toLowerCase() == "message") {
-            if (!args[2]) return message.channel.send("<:cross:724049024943915209> | You didn't provide a message. Here are some quotes you can use to customize your xp reward message: \n`{{user}}` -> User mention, `{{tag}}` -> User tag, `{{username}}` -> Username, `{{level}}` -> Current level, `{{role}} -> Reward role`")
+            if (!args[2]) return message.error("You didn't provide a message. Here are some quotes you can use to customize your xp reward message: \n`{{user}}` -> User mention, `{{tag}}` -> User tag, `{{username}}` -> Username, `{{level}}` -> Current level, `{{role}} -> Reward role`", true ,"xp message <message>")
             args.shift()
             guild.settings.leveling.reward.xp.message = args.join(" ")
-            guild.save().then(() => message.channel.send(`<:tick:724048990626381925> | Xp reward message has been set to your message successfully!`)).catch(err => message.channel.send("An error occured: " + err))
+            message.guild.settings.leveling.reward.xp.message = args.join(" ")
+            guild.save().then(() => message.success(`Xp reward message has been set to your message successfully!`)).catch(err => message.channel.send("An error occured: " + err))
           } else if (args[1].toLowerCase() == "embed") {
             if (guild.settings.leveling.reward.xp.embed) {
               guild.settings.leveling.reward.xp.embed = false
+              message.guild.settings.leveling.reward.xp.embed = false
             } else {
               guild.settings.leveling.reward.xp.embed = true
+              message.guild.settings.leveling.reward.xp.embed = true
             }
-            guild.save().then(() => message.channel.send(`<:tick:724048990626381925> | Xp reward message embed has been toggled to \`${guild.settings.leveling.reward.xp.send}\`, if enabled messages will be sent in a embed.\n**Warning** If you don't want the role to be pinged please make embed true or take the {{role}} parameter out the message. You have been warned.`)).catch(err => message.channel.send("An error occured: " + err))
+            guild.save().then(() => message.success(`Xp reward message embed has been toggled to \`${guild.settings.leveling.reward.xp.send}\`, if enabled messages will be sent in a embed.\n**Warning** If you don't want the role to be pinged please make embed true or take the {{role}} parameter out the message. You have been warned.`)).catch(err => message.channel.send("An error occured: " + err))
           } else {
-            return message.channel.send("<:cross:724049024943915209> | You didn't provide a true option, `toggle, channel, message, embed`");
+            return message.error("You didn't provide a true option, `toggle, channel, message, embed`", true, "level <option>");
           }
         } else if (args[0].toLowerCase() == "level") {
           if (args[1].toLowerCase() == "toggle") {
             if (guild.settings.leveling.reward.level.send) {
               guild.settings.leveling.reward.level.send = false
+              message.guild.settings.leveling.reward.level.send = false
             } else {
               guild.settings.leveling.reward.level.send = true
+              message.guild.settings.leveling.reward.level.send = true
             }
-            guild.save().then(() => message.channel.send(`<:tick:724048990626381925> | Level reward message has been toggled to \`${guild.settings.leveling.reward.level.send}\``)).catch(err => message.channel.send("An error occured: " + err))
+            guild.save().then(() => message.success(`Level reward message has been toggled to \`${guild.settings.leveling.reward.level.send}\``)).catch(err => message.channel.send("An error occured: " + err))
           } else if (args[1].toLowerCase() == "channel") {
-            if (!args[2]) return message.channel.send("<:cross:724049024943915209> | You didn't provide a channel, or provide `default` to set it to current channel.")
-            if (!message.mentions.channels.first() && args[2].toLowerCase() != "default") return message.channel.send("<:cross:724049024943915209> | You didn't provide a true channel, or provide `default` to set it to current channel.");
+            if (!args[2]) return message.error("You didn't provide a channel, or provide `default` to set it to current channel.", true, "level channel <channel - default>")
+            if (!message.mentions.channels.first() && args[2].toLowerCase() != "default") return message.error("You didn't provide a true channel, or provide `default` to set it to current channel.");
             guild.settings.leveling.reward.level.channel = message.mentions.channels.first() ? message.mentions.channels.first().id : args[2].toLowerCase()
-            guild.save().then(() => message.channel.send(`<:tick:724048990626381925> | Level reward messages now will be sent to ${guild.settings.leveling.reward.level.channel == "default" ? "the current channel" : `<#${guild.settings.leveling.reward.level.channel}>`}.`)).catch(err => message.channel.send("An error occured: " + err))
+            message.guild.settings.leveling.reward.level.channel = message.mentions.channels.first() ? message.mentions.channels.first().id : args[2].toLowerCase()
+            guild.save().then(() => message.success(`Level reward messages now will be sent to ${guild.settings.leveling.reward.level.channel == "default" ? "the current channel" : `<#${guild.settings.leveling.reward.level.channel}>`}.`)).catch(err => message.channel.send("An error occured: " + err))
           } else if (args[1].toLowerCase() == "message") {
-            if (!args[2]) return message.channel.send("<:cross:724049024943915209> | You didn't provide a message. Here are some quotes you can use to customize your level reward message: \n`{{user}}` -> User mention, `{{tag}}` -> User tag, `{{username}}` -> Username, `{{xp}}` -> Current xp, `{{role}} -> Reward role`")
+            if (!args[2]) return message.error("You didn't provide a message. Here are some quotes you can use to customize your level reward message: \n`{{user}}` -> User mention, `{{tag}}` -> User tag, `{{username}}` -> Username, `{{xp}}` -> Current xp, `{{role}} -> Reward role`", true, "level message <message>")
             args.shift()
             guild.settings.leveling.reward.level.message = args.join(" ")
-            guild.save().then(() => message.channel.send(`<:tick:724048990626381925> | Level reward message has been set to your message successfully!`)).catch(err => message.channel.send("An error occured: " + err))
+            message.guild.settings.leveling.reward.level.message = args.join(" ")
+            guild.save().then(() => message.success(`Level reward message has been set to your message successfully!`)).catch(err => message.channel.send("An error occured: " + err))
           } else if (args[1].toLowerCase() == "embed") {
             if (guild.settings.leveling.reward.level.embed) {
               guild.settings.leveling.reward.level.embed = false
+              message.guild.settings.leveling.reward.level.embed = false
             } else {
               guild.settings.leveling.reward.level.embed = true
+              message.guild.settings.leveling.reward.level.embed = true
             }
-            guild.save().then(() => message.channel.send(`<:tick:724048990626381925> | Level reward message embed has been toggled to \`${guild.settings.leveling.reward.level.send}\`, if enabled messages will be sent in a embed.\n**Warning** If you don't want the role to be pinged please make embed true or take the {{role}} parameter out the message. You have been warned.`)).catch(err => message.channel.send("An error occured: " + err))
+            guild.save().then(() => message.success(`Level reward message embed has been toggled to \`${guild.settings.leveling.reward.level.send}\`, if enabled messages will be sent in a embed.\n**Warning** If you don't want the role to be pinged please make embed true or take the {{role}} parameter out the message. You have been warned.`)).catch(err => message.channel.send("An error occured: " + err))
           } else {
-            return message.channel.send("<:cross:724049024943915209> | You didn't provide a true option, `toggle, channel, message, embed`");
+            return message.error("You didn't provide a true option, `toggle, channel, message, embed`", true, "xp <option>");
           }
         } else {
-
+          return message.error("You didn't provide a option, `level, xp`", true, this.usage)
         }
-
       }
     })
   }

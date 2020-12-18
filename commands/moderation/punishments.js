@@ -1,7 +1,7 @@
 const Discord = require("discord.js");
 const Guild = require("../../schemas/guild.js");
 const mongoose = require("mongoose");
-const find = require("../../find.js");
+const find = require("../../utility/find.js");
 const prettyms = require("pretty-ms");
 
 module.exports = {
@@ -16,7 +16,7 @@ module.exports = {
     let user;
     if (args[0]) {
       user = await find.guildMember(bot, message, args[0])
-      if (!user) return message.channel.send("<:cross:724049024943915209> | You didn't provide a true user.");
+      if (!user) return message.error("You didn't provide a true user.", true, this.usage);
       user = user.user
     } else {
       user = message.author

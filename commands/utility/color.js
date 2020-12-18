@@ -1,5 +1,5 @@
 const Discord = require("discord.js");
-const w3color = require("../../w3color.js");
+const w3color = require("../../utility/w3color.js");
 const Canvas = require("canvas");
 
 module.exports = {
@@ -11,7 +11,7 @@ module.exports = {
   usage: "<color[name(s), hex, rgb, hsl, hwb, cmyk, ncol] - color type>",
   cooldown: 5,
   async execute(bot, message, args) {
-    if (!args[0]) return message.channel.send("<:cross:724049024943915209> | You didn't provide a color.\nA color can be name, hex, rgb, hsl, hwb, cmyk or a ncol. To get into details please use the command with the color type.")
+    if (!args[0]) return message.error("You didn't provide a color.\nA color can be name, hex, rgb, hsl, hwb, cmyk or a ncol. To get into details please use the command with the color type.", true, this.usage)
 
     if (args[0].toLowerCase() === "name" || args[0].toLowerCase() === "names") {
       //Name

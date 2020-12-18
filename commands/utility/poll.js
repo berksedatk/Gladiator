@@ -10,9 +10,9 @@ module.exports = {
   cooldown: 5,
   reqPermissions: ['MANAGE_MESSAGES'],
   async execute(bot, message, args) {
-    if (!args[0]) return message.channel.send("<:cross:724049024943915209> | You didnt provide a time or a poll.")
+    if (!args[0]) return message.error("You didnt provide a time or a poll.", true, this.usage)
     let time = args[0] ? (ms(args[0]) || null) : null
-    if (time > 86400000) return message.channel.send("<:cross:724049024943915209> | Time cannot be longer than a day");
+    if (time > 86400000) return message.error("Time cannot be longer than a day");
     if (time === null) {
       const pollEmbed = new Discord.MessageEmbed()
       .setAuthor(message.author.tag, message.author.avatarURL())

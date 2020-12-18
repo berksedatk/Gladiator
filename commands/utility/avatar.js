@@ -1,5 +1,5 @@
 const Discord = require("discord.js");
-const find = require("../../find.js");
+const find = require("../../utility/find.js");
 
 module.exports = {
   name: "avatar",
@@ -14,7 +14,7 @@ module.exports = {
       user = message.author
     } else {
       user = await find.user(bot, message, args[0])
-      if (!user) return message.channel.send("<:cross:724049024943915209> | You didn't provide a true user.")
+      if (!user) return message.error("You didn't provide a true user.", true, this.usage)
     }
 
     message.channel.send({

@@ -1,6 +1,6 @@
 const Discord = require("discord.js");
 const prettyms = require("pretty-ms");
-const find = require("../../find.js");
+const find = require("../../utility/find.js");
 
 module.exports = {
   name: "channelinfo",
@@ -18,7 +18,7 @@ module.exports = {
     } else if (args[0]) {
 
       let channel = await find.channel(bot, message, args[0])
-      if (!channel) return message.channel.send("<:cross:724049024943915209> | You didn't provide a true channel.")
+      if (!channel) return message.error("You didn't provide a true channel.", true, this.usage)
 
       let parentName = channel.parentID === null ? "No Category" : bot.channels.cache.get(channel.parentID).name;
       sendChannelEmbed(channel, parentName);

@@ -1,16 +1,17 @@
 const Discord = require("discord.js");
 const Guild = require("../../schemas/guild.js");
 
-function factorial(num) {
-  if (num === 0) {
-    return 0;
-} if (num === 1)
-    return 1;
-  for (var i = num - 1; i >= 1; i--) {
-    num += i;
-  }
-  return num;
-}
+function combine(num) {
+  if (num < 0) return -1;
+  else if (num == 0) return 0;
+  else return (num + combine(num - 1));
+};
+
+function level(num) {
+ num = Math.floor(num / 560);
+ for (lvl = 0; num >= combine(lvl +1); lvl++);
+ return lvl;
+};
 
 module.exports = {
   name: "leaderboard",
@@ -21,21 +22,23 @@ module.exports = {
   cooldown: 5,
   guildOnly: true,
   execute(bot, message, args) {
-    Guild.findOne({ guildID: message.guild.id }, (err, guild) => {
-      if (err) return message.channel.send(`An error occured: ${err}`);
-      if (!guild) return message.channel.send("There was an error while fetching server database, please contact a bot dev! (https://discord.gg/tkR2nTf)");
+    Guild.findOne({ guildID: message.guild.id }, async (err, guild) => {
+      if (err) return message.error(`An error occured: ${err}`);
+      if (!guild) return message.error("There was an error while fetching server database, please contact a bot dev! (https://discord.gg/tkR2nTf)");
       if (guild) {
+
+        await message.guild.members.fetch()
 
         let users = [];
         let top = [];
-        guild.members.forEach(member => {
-          if (member.xp > 0) {
-            const lvl = Number(member.level)
-            const lastxp = Number(member.xp) + factorial(lvl) * 560
+        await guild.members.forEach(async member => {
+          if (member.xp >= 0) {
+            let lvl = level(member.xp)
+            let xp = member.xp
             users.push({
               user: member.username,
-              xp: lastxp,
-              lvl: Number(member.level)
+              xp: xp,
+              lvl: level(member.xp)
             });
           }
         });
@@ -55,7 +58,7 @@ module.exports = {
           }
           page = `1/${pages}`
         } else {
-          if (Number(args[0]) > pages || Number(args[0]) < 1) return message.channel.send("<:cross:724049024943915209> | This page does not exist.");
+          if (Number(args[0]) > pages || Number(args[0]) < 1) return message.error("This page does not exist.");
           for (let i = goto; i < goto + extra; i++) {
             top.push(`${i == 0 ? ':crown:' : (i === 1 ? ':second_place:' : (i === 2 ? ':third_place:': `${i + 1}.`))} ${users[i].user} | Xp: ${users[i].xp} | Level: ${users[i].lvl}`)
           }
@@ -66,7 +69,7 @@ module.exports = {
         let count = 1;
         users.forEach(userz => {
           if (userz.user === message.author.tag) {
-            place = count;
+            place = count == 0 ? `Not ranked yet.` : `${count}. Place`;
           } else {
             count += 1;
           }
@@ -77,7 +80,7 @@ module.exports = {
         .setColor("GOLD")
         .setFooter(`Page of ${page} - Requested by ${message.author.tag}`, message.author.avatarURL())
         .setDescription(top)
-        .addField("Your place", `${place}. Place`);
+        .addField("Your place", place);
         message.channel.send(lbEmbed);
       }
     });

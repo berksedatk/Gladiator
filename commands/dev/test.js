@@ -3,8 +3,6 @@
 //Delete the unused properities on module.exports
 //Insert your code inside execute command
 
-const Discord = require("discord.js");
-
 module.exports = {
   name: "test",
   category: "Dev",

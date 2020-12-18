@@ -4,7 +4,7 @@ const Mute = require("../../schemas/mute.js");
 const Guild = require("../../schemas/guild.js");
 const ms = require("ms");
 const prettyms = require("pretty-ms");
-const find = require("../../find.js");
+const find = require("../../utility/find.js");
 
 module.exports = {
   name: "mute",
@@ -18,17 +18,17 @@ module.exports = {
   botPermissions: ['MANAGE_ROLES','MANAGE_CHANNELS'],
   async execute(bot, message, args) {
 
-    if (!args[0]) return message.channel.send("<:cross:724049024943915209> | You didn't provided a user.");
+    if (!args[0]) return message.error("You didn't provided a user.", true, this.usage);
     let member = await find.guildMember(bot, message, args[0])
-    if (!member) return message.channel.send("<:cross:724049024943915209> | You didn't provide a true user.");
+    if (!member) return message.error("You didn't provide a true user.", true, this.usage);
 
-    if (member.id === message.author.id) return message.channel.send(":x: | You can't mute yourself. Dummy!");
-    if (member.roles.highest.position >= message.member.roles.highest.position && message.guild.owner.id != message.author.id) return message.channel.send(":x: | You can't mute this member, they are too powerful for you.")
-    if (!member.bannable) return message.channel.send("<:cross:724049024943915209> | This user is too powerful for me.");
+    if (member.id === message.author.id) return message.error("You can't mute yourself. Dummy!");
+    if (member.roles.highest.position >= message.member.roles.highest.position && message.guild.owner.id != message.author.id) return message.error("You can't mute this member, they are too powerful for you.")
+    if (!member.bannable) return message.error("This user is too powerful for me.");
 
     await Mute.findOne({ guildID: message.guild.id, userID: member.id }, async (err, mute) => {
       if (err) return message.channel.send(`An error occured: ${err}`);
-      if (mute) return message.channel.send("<:cross:724049024943915209> | This user is already muted!");
+      if (mute) return message.error("This user is already muted!");
       if (!mute) {
         args.shift()
         let caseNumber, time
@@ -75,7 +75,7 @@ module.exports = {
         let mutedrole = message.guild.roles.cache.filter(role => role.name.toLowerCase() === "muted").first()
 
         if (!mutedrole) {
-          message.channel.send("There was no muted role detected so created a one!")
+          message.channel.send("<:warning:724052384031965284> | There was no muted role detected so created a one!")
 
           mutedrole = await message.guild.roles.create({
             data: {
@@ -94,7 +94,7 @@ module.exports = {
           })
         }
 
-        if (mutedrole.position >= message.guild.me.roles.highest.position) return message.channel.send("<:cross:724049024943915209> | I can't access the muted role!")
+        if (mutedrole.position >= message.guild.me.roles.highest.position) return message.error("I can't access the muted role! Please move my role Gladiator higher than the Muted role or move the Muted role lower.")
 
         const muted = await new Mute({
           _id: mongoose.Types.ObjectId(),

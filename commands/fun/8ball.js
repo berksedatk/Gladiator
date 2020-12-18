@@ -8,8 +8,8 @@ module.exports = {
   examples: "g!8ball Am I going to be rich in future?",
   cooldown: 5,
   execute(bot, message, args) {
-    if (!args[0]) return message.channel.send("<:cross:724049024943915209> | You have to ask a question to 8ball!");
-    if (args.join(' ').length >= 256 || args.join(' ').length < 1) return message.channel.send(":x: | Question must be in range of 1 to 256 characters!");
+    if (!args[0]) return message.error("You have to ask a question to 8ball!", true, this.usage);
+    if (args.join(' ').length >= 256 || args.join(' ').length < 1) return message.error("Question must be in range of 1 to 256 characters!");
 
     const ball = ["As I see it, yes.","Ask again later.","Better not tell you now.","Cannot predict now.","Concentrate and ask again.",
     "Don’t count on it.", "It is certain.","It is decidedly so.","Most likely.","My reply is no.","My sources say no.","Outlook not so good.",

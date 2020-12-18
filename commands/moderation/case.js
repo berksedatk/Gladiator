@@ -12,14 +12,14 @@ module.exports = {
   cooldown: 5,
   guildOnly: true,
   execute(bot, message, args, db) {
-    if (!args[0]) return message.channel.send("<:cross:724049024943915209> | You didn't provide a case ID.")
+    if (!args[0]) return message.error("You didn't provide a case ID.", true, this.usage)
     const caseNumber = args[0]
     Guild.findOne({ guildID: message.guild.id }, (err, guild) => {
       if (err) return message.channel.send(`An error occured: ${err}`);
       if (!guild) return message.channel.send("There was an error while fetching server database, please contact a bot dev! (https://discord.gg/tkR2nTf)")
       if (guild) {
         const cases = guild.cases.get(caseNumber) ? guild.cases.get(caseNumber) : false
-        if (!cases) return message.channel.send(":x: | A case with this ID does not exist!")
+        if (!cases) return message.error("A case with this ID does not exist!")
         let casemsg = `**Issued by:** <@${cases.by.id}>(${cases.by.id}) \n**Action:** ${cases.action} \n**Reason:** ${cases.reason}`
 
         cases.action === "mute" ? (cases.length === null ? casemsg += `\n**Muted for:** No time was provided.` : casemsg += `\n**Muted for:** ${prettyms(cases.length, {verbose: true})}`) : false

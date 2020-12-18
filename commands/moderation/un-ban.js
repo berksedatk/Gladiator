@@ -13,12 +13,12 @@ module.exports = {
   reqPermissions: ["BAN_MEMBERS"],
   botPermissions: ["BAN_MEMBERS"],
   async execute(bot, message, args) {
-    if (!args[0]) return message.channel.send("<:cross:724049024943915209> | You must provide a username or id of the person you want to unban.");
+    if (!args[0]) return message.error("You must provide a username or id of the person you want to unban.", true, this.usage);
     let user = args.shift();
     //Dont forget to add case
     let bans = await message.guild.fetchBans()
     let banned = bans.find(ban => ban.user.username.toLowerCase().includes(user.toLowerCase()) || ban.user.id === user)
-    if (!banned) return message.channel.send("<:cross:724049024943915209> | This ban could not be found.");
+    if (!banned) return message.error("This ban could not be found.");
 
     await Guild.findOne({ guildID: message.guild.id }, async (err, guild) => {
       if (err) return message.channel.send(`An error occured: ${err}`);

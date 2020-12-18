@@ -4,8 +4,8 @@ const mongoose = require("mongoose");
 
 module.exports = (bot, guildMember) => {
   Guild.findOne({ guildID: guildMember.guild.id }, (err, guild) => {
-    if (err) return console.log(`Could not add a new member to guild! ${err}`);
-    if (!guild) return console.log(`Could not add a new member to guild, Database does not exist: ${guildMember.guild.name}`)
+    if (err) return console.log(`guildMemberAdd: Creating user profile - Could not add a new member to guild! ${err}`);
+    if (!guild) require("../utility/addguild.js")(guildMember.guild);
     if (guild) {
       //Message
       if (guild.settings.join.message.text.enabled) {
@@ -26,7 +26,7 @@ module.exports = (bot, guildMember) => {
             with: guildMember.guild.name
           }, {
             replace: "{{count}}",
-            with: guildMember.guild.members.cache.size + 1
+            with: guildMember.guild.memberCount
           }
         ]
         replaceList.forEach(s => {
@@ -66,7 +66,7 @@ module.exports = (bot, guildMember) => {
           color: "#add8e6",
           lastxpmessage: guildMember.joinedTimestamp
         })
-        guild.save().catch(err => console.log(`Error while adding a user to guild ${guildMember.guild.name} -> ${guildMember.user.tag}`));
+        guild.save().catch(err => console.log(`guildMemberAdd: Creating user profile - Error while adding a user to guild ${guildMember.guild.id} -> ${guildMember.user.tag}`));
       }
     }
   });

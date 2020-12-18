@@ -14,7 +14,7 @@ module.exports = {
   guildOnly: true,
   reqPermissions: ['MANAGE_MESSAGES'],
   execute(bot, message, args, db) {
-    if (!args[0]) return message.channel.send("<:cross:724049024943915209> | You didn't provide a case ID.");
+    if (!args[0]) return message.error("You didn't provide a case ID.", true, this.usage);
     const caseNumber = args[0]
     Guild.findOne({ guildID: message.guild.id }, (err, guild) => {
       if (err) return message.channel.send(`An error occured: ${err}`);
@@ -36,7 +36,7 @@ module.exports = {
           message.channel.awaitMessages(m => m.author.id === message.author.id, { max: 1, time: 15000, errors:["time"] }).then(collected => {
             if (collected.first().content.toLowerCase() === "yes" || collected.first().content.toLowerCase() === "y") {
               guild.cases.delete(caseNumber)
-              guild.save().then(() => message.channel.send("<:tick:724048990626381925> | Case has been removed successfully.")).catch(err => message.channel.send(`An error occured: ${err}`))
+              guild.save().then(() => message.success("Case has been removed successfully.")).catch(err => message.channel.send(`An error occured: ${err}`))
             } else {
               return message.channel.send("<:cross:724049024943915209> | Command cancelled.")
             }

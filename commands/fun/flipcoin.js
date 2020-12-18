@@ -49,12 +49,10 @@ module.exports = {
         }
         flipcoin(coin, color, side, response);
       } else {
-        return message.channel.send("An error occured.");
+        return message.error("An error occured.");
       }
     } else {
-      message.channel.send(
-        ":x: | Please provide a side, `head, heads, tail, tails`"
-      );
+      message.error("Please provide a side, `head, heads, tail, tails`", true, this.usage);
     }
 
     function flipcoin(coin, color, side, response) {
@@ -62,10 +60,7 @@ module.exports = {
         .setTimestamp()
         .setColor(color)
         .addField(`**${side}!**`, `${response}`)
-        .setFooter(
-          "Requested by " + message.author.tag,
-          message.author.avatarURL()
-        );
+        .setFooter("Requested by " + message.author.tag, message.author.avatarURL());
       message.channel.send(coinEmbed);
     }
   }

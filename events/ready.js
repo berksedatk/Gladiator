@@ -36,9 +36,9 @@ module.exports = async client => {
         }
       })
       user.send("Thanks for voting! You can vote again in 12 hours!").then(() => {
-        console.log(`${user.tag} voted for the bot!`)
+        console.log(`ready: Voting - ${user.tag} voted for the bot!`)
       }).catch(err => {
-        console.log(`${user.tag} voted for the bot! But could not be messaged.`)
+        console.log(`ready: Voting - ${user.tag} voted for the bot! But could not be messaged.`)
       })
     } else {
       client.channels.cache.get("673867340810551342").send({
@@ -54,7 +54,7 @@ module.exports = async client => {
           timestamp: Date.now()
         }
       })
-      console.log(`${user.tag} voted for the bot! But could not find it user cache.`)
+      console.log(`ready: Voting - ${user.tag} voted for the bot! But could not find it user cache.`)
     }
   });
 
@@ -64,7 +64,7 @@ module.exports = async client => {
   });
 
   //Mutes
-  setInterval(function() {
+  setInterval(() => {
     Mute.find({}, (err, mutes) => {
       mutes.forEach(mute => {
         if (mute.time != undefined && Date.now() > mute.time) {
@@ -72,13 +72,33 @@ module.exports = async client => {
             try {
               client.guilds.cache.get(mute.guildID).members.cache.get(mute.userID).roles.remove(mute.role)
             } catch(err) {
-              console.log(`Could not remove the mute! ${client.guilds.cache.get(mute.guildID).name} -> ${client.guilds.cache.get(mute.guildID).members.cache.get(mute.userID).user.tag}`)
+              console.log(`ready: Mutes - Could not remove the mute! ${client.guilds.cache.get(mute.guildID).name} -> ${client.guilds.cache.get(mute.guildID).members.cache.get(mute.userID).user.tag}`)
             }
           })
         }
       })
     })
   }, 10000)
+
+  //Guild Settings
+  let fetched = 0
+  await Guild.find({}, (err, guilds) => {
+    guilds.forEach(guild => {
+      let guildObject = client.guilds.cache.get(guild.guildID)
+      if (guildObject) {
+        fetched += 1
+        guildObject.settings = guild.settings
+        guildObject.blacklisted = guild.blacklisted
+        guildObject.overridePermissions = guild.overridePermissions
+      }
+    })
+  })
+  console.log(`${fetched}/${client.guilds.cache.size} Guilds have been fetched.`)
+
+  //backups
+  setInterval(() => {
+    require("../utility/backup.js")(client);
+  }, 43200000);
 
   //Client info
   console.log(`Discord - Bot is ready.

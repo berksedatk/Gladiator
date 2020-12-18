@@ -12,8 +12,10 @@ module.exports = {
   aliases: ["serverinfo","si","gi"],
   cooldown: 5,
   guildOnly: "true",
-  execute(bot, message, args) {
+  async execute(bot, message, args) {
     const guild = message.guild;
+
+    await guild.members.fetch()
 
     let vccount = 0;
     let textcount = 0;
@@ -37,29 +39,11 @@ module.exports = {
     let usercount = 0;
     let botcount = 0;
 
-    let onlinecount = 0;
-    let offlinecount = 0;
-    let dndcount = 0;
-    let idlecount = 0;
-
-    let mobilecount = 0;
-    let webcount = 0;
-    let desktopcount = 0;
     guild.members.cache.map(m => {
       if (m.user.bot === true) {
         botcount += 1;
       } else {
         usercount += 1;
-        let plat = m.presence.clientStatus;
-        if (plat != null && JSON.stringify(plat) != "{}") {
-          if (plat.web) webcount += 1;
-          if (plat.mobile) mobilecount += 1;
-          if (plat.desktop) desktopcount += 1;
-        }
-        if (m.presence.status == "online") onlinecount += 1;
-        if (m.presence.status == "idle") idlecount += 1;
-        if (m.presence.status == "dnd") dndcount += 1;
-        if (m.presence.status == "offline") offlinecount += 1;
       }
     });
 
@@ -78,7 +62,7 @@ module.exports = {
       .setColor("PURPLE")
       .addField("Guild Owner",`<:owner:724048854592520283> ${guild.owner}(${guild.owner.id})`)
       .addField("Guild Create Date", `${guild.createdAt}(${prettyms(Date.now() - guild.createdTimestamp, {verbose: true})} ago)`)
-      .addField("Members", `Users: ${usercount}, Bots: ${botcount} (Total ${guild.members.cache.size}) \n\n<:online2:723959335209664535>: ${onlinecount}, <:idle2:723959389006069841>: ${idlecount}, <:dnd2:723959428679991336>: ${dndcount} (Total ${onlinecount + idlecount + dndcount}) \n<:offline2:724050268907372624>: ${offlinecount} \n\nDesktop: ${desktopcount}, Mobile: ${mobilecount}, Web: ${webcount}`, true)
+      .addField("Members", `Users: ${usercount}, Bots: ${botcount} (Total ${guild.members.cache.size})`, true)
       .addField("Channels", channels, true)
       .addField("Explicit Content Filter", prettyString(guild.explicitContentFilter))
       .addField("2FA", guild.mfaLevel === 0 ? "Disabled" : "Enabled")

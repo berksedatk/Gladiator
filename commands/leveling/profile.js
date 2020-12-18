@@ -1,18 +1,7 @@
 const Discord = require("discord.js");
 const Guild = require("../../schemas/guild.js");
-const find = require("../../find.js");
-const w3color = require("../../w3color.js");
-
-function factorial(num) {
-  if (num === 0) {
-    return 0;
-} if (num === 1)
-    return 1;
-  for (var i = num - 1; i >= 1; i--) {
-    num += i;
-  }
-  return num;
-}
+const find = require("../../utility/find.js");
+const w3color = require("../../utility/w3color.js");
 
 module.exports = {
   name: "profile",
@@ -31,10 +20,10 @@ module.exports = {
     } else if (args[0].toLowerCase() === "color") {
       args.shift()
       let color = args.join()
-      if (color.length < 1) return message.channel.send("<:cross:724049024943915209> | You didn't provide a color to set for your profile")
-      if (!w3color(color).valid) return message.channel.send("<:cross:724049024943915209> | You didn't provide a true color.\n A color can be name, hex, rgb, hsl, hwb, cmyk or a ncol.")
+      if (color.length < 1) return message.error("You didn't provide a color to set for your profile", true, "color <color name/hex/rgb>")
+      if (!w3color(color).valid) return message.error("You didn't provide a true color.\n A color can be name, hex, rgb, hsl, hwb, cmyk or a ncol.")
 
-      Guild.findOne({ guildID: message.guild.id }, (err, guild) => {
+      Guild.findOne({ guildID: message.guild.id }, async (err, guild) => {
         if (err) return message.channel.send(`An error occured: ${err}`);
         if (!guild) return message.channel.send("There was an error while fetching server database, please contact a bot dev! (https://discord.gg/tkR2nTf)")
         let member = guild.members.get(message.author.id)
@@ -47,7 +36,7 @@ module.exports = {
             color: w3color(color).toHexString(),
             lastxpmessage: 0
           })
-          guild.save().then(() => {return message.channel.send(`<:tick:724048990626381925> | Your profile color has been changed to ${w3color(color).toHexString()}`)}).catch(err => message.channel.send(`An error occured: ${err}`));
+          guild.save().then(() => {return message.success(`Your profile color has been changed to ${w3color(color).toHexString()}`)}).catch(err => message.channel.send(`An error occured: ${err}`));
         } else {
           member = guild.members.set(message.author.id, {
             username: message.author.tag,
@@ -57,17 +46,18 @@ module.exports = {
             color: w3color(color).toHexString(),
             lastxpmessage: member.lastxpmessage
           })
-          guild.save().then(() => {return message.channel.send(`<:tick:724048990626381925> | Your profile color has been changed to ${w3color(color).toHexString()}`)}).catch(err => message.channel.send(`An error occured: ${err}`));
+          guild.save().then(() => {return message.success(`Your profile color has been changed to ${w3color(color).toHexString()}`)}).catch(err => message.channel.send(`An error occured: ${err}`));
         }
       })
     } else {
+      await message.guild.members.fetch()
       user = await find.guildMember(bot, message, args[0])
-      if (!user) return message.channel.send("<:cross:724049024943915209> | You didn't provide a true user.")
+      if (!user) return message.error("You didn't provide a true user.", true, "<user mention/name>")
       user = user.user
       profile(user)
     }
     function profile(user) {
-      Guild.findOne({ guildID: message.guild.id }, (err, guild) => {
+      Guild.findOne({ guildID: message.guild.id }, async (err, guild) => {
         if (err) return message.channel.send(`An error occured: ${err}`);
         if (!guild) return message.channel.send("There was an error while fetching server database, please contact a bot dev! (https://discord.gg/tkR2nTf)")
         if (guild) {
@@ -92,13 +82,14 @@ module.exports = {
             guild.save().catch(err => message.channel.send(`An error occured: ${err}`));
           }
 
+          await message.guild.members.fetch()
+
           let users = [];
           guild.members.forEach(membere => {
-            if (membere.xp > 0) {
-              const lastxp = Number(membere.xp) + factorial(Number(membere.level)) * 560
+            if (membere.xp >= 0) {
               users.push({
                 user: membere.username,
-                xp: lastxp,
+                xp: membere.xp,
               });
             }
           });
@@ -114,14 +105,26 @@ module.exports = {
           .setColor(member.color.toUpperCase())
           .setTimestamp()
           .setFooter(`Requested by ${message.author.tag}`, message.author.avatarURL())
-          .addField("Level", member.level, true)
-          .addField("Server Rank", `#${rank}`,true)
-          .addField("Total Xp", `${Number(member.xp) + factorial(Number(member.level)) * 560} xp`)
-          .addField("Xp for next level", `${member.xp}/${(Number(member.level) + 1) * 560}`,true)
-          .addField("Profile Color", member.color,true)
+          .addField("Level", level(member.xp), true)
+          .addField("Server Rank", `#${rank}`, true)
+          .addField("Total Xp", `${member.xp} xp`)
+          .addField("Xp for next level", `${member.xp - (combine(level(member.xp)) * 560)}/${(level(member.xp) + 1) * 560}`, true)
+          .addField("Profile Color", member.color, true)
           message.channel.send(profileEmbed)
         }
       })
     }
   }
+};
+
+function combine(num) {
+  if (num < 0) return -1;
+  else if (num == 0) return 0;
+  else return (num + combine(num - 1));
+};
+
+function level(num) {
+ num = Math.floor(num / 560);
+ for (lvl = 0; num >= combine(lvl +1); lvl++);
+ return lvl;
 };

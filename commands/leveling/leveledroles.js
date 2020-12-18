@@ -1,6 +1,6 @@
 const Discord = require("discord.js");
 const Guild = require("../../schemas/guild.js");
-const find = require("../../find.js");
+const find = require("../../utility/find.js");
 
 module.exports = {
   name: "leveledroles",
@@ -14,10 +14,10 @@ module.exports = {
   reqPermissions: ['MANAGE_GUILD'],
   botPermissions: ['MANAGE_ROLES'],
   execute(bot, message, args) {
-    if (!args[0]) return message.channel.send("<:cross:724049024943915209> | You have to provide a option, `level, xp`")
+    if (!args[0]) return message.error("You have to provide a option, `level, xp`", true, this.usage)
     Guild.findOne({ guildID: message.guild.id }, async (err, guild) => {
-      if (err) return message.channel.send(`An error occured: ${err}`);
-      if (!guild) return message.channel.send("There was an error while fetching server database, please contact a bot dev! (https://discord.gg/tkR2nTf)");
+      if (err) return message.error(`An error occured: ${err}`);
+      if (!guild) return message.error("There was an error while fetching server database, please contact a bot dev! (https://discord.gg/tkR2nTf)");
       if (guild) {
         if (args[0].toLowerCase() == "level") {
           if (!args[1]) {
@@ -41,32 +41,35 @@ module.exports = {
             message.channel.send(levelembed)
           } else if (args[1].toLowerCase() == "add") {
             //Add leveled role
-            if (!args[2]) return message.channel.send("<:cross:724049024943915209> | You need to provide a level to add a role onto. Usage `g!leveledroles level add <level> <role>`");
-            if (args[2] > 100 || args[2] < 1) return message.channel.send("<:cross:724049024943915209> | I do not suggest you to use levels that are higher than 100 and below 1. Sorry.");
+            if (!args[2]) return message.error("You need to provide a level to add a role onto.", true, this.usage);
+            if (args[2] > 100 || args[2] < 1) return message.error("I do not suggest you to use levels that are higher than 100 and below 1. Sorry.");
 
             let role = await find.role(bot, message, args[3])
-            if (!role) return message.channel.send("<:cross:724049024943915209> | You didn't provide a true role.");
+            if (!role) return message.error("You didn't provide a true role.");
 
             if (guild.settings.leveling.roles.level.get(args[2])) {
-              if (guild.settings.leveling.roles.level.get(args[2]) === role.id) return message.channel.send("<:cross:724049024943915209> | This role is already set up for this level.");
+              if (guild.settings.leveling.roles.level.get(args[2]) === role.id) return message.error("This role is already set up for this level.");
             } else {
               guild.settings.leveling.roles.level.set(args[2], role.id)
             }
 
-            await guild.save().then(() => message.channel.send({embed: {description: `<:tick:724048990626381925> | ${role} has been set for level \`${args[2]}\` as a leveled role.`}})).catch(err => message.channel.send(`An error occured: ${err}`))
+            await guild.save().then(() => message.success(`${role} has been set for level \`${args[2]}\` as a leveled role.`, true)).catch(err => message.error(`An error occured: ${err}`))
 
           } else if (args[1].toLowerCase() == "remove") {
             //Remove leveled role
             let level = (args[2] <= 100 && args[2] > 0) ? args[2] : false
-            if (!level) return message.channel.send("<:cross:724049024943915209> | You need to provide a level.");
+            if (!level) return message.error("You need to provide a level.", true, this.usage);
 
             let role = guild.settings.leveling.roles.level.get(level)
 
-            if (!role) return message.channel.send("<:cross:724049024943915209> | This level does not have any roles set.");
+            if (!role) return message.error("This level does not have any roles set.");
 
             guild.settings.leveling.roles.level.set(level, undefined)
-            await guild.save().then(() => message.channel.send({embed: {description: `<:tick:724048990626381925> | <@&${role}> has been removed from the level \`${level}\`.`}})).catch(err => message.channel.send(`An error occured: ${err}`))
+            message.guild.settings.leveling.roles.level.set(level, undefined)
+            await guild.save().then(() => message.success(`<@&${role}> has been removed from the level \`${level}\`.`, true, this.usage)).catch(err => message.error(`An error occured: ${err}`))
 
+          } else {
+            return message.error("You didn't provide a true option, `add, remove` or leave blank for list.", true, "level <add - remove> <level> <role>")
           }
         } else if (args[0].toLowerCase() == "xp") {
           if (!args[1]) {
@@ -90,34 +93,38 @@ module.exports = {
             message.channel.send(xpembed)
           } else if (args[1].toLowerCase() == "add") {
             //Add leveled role
-            if (!args[2]) return message.channel.send("<:cross:724049024943915209> | You need to provide a level to add a role onto. Usage `g!leveledroles level add <level> <role>`");
-            if (args[2] <= 100) return message.channel.send("<:cross:724049024943915209> | I do not suggest you to use xp that is under 100. Sorry.");
+            if (!args[2]) return message.error("You need to provide a level to add a role onto.", true, this.usage);
+            if (args[2] <= 100) return message.error("I do not suggest you to use xp that is under 100. Sorry.");
 
             let role = await find.role(bot, message, args[3])
-            if (!role) return message.channel.send("<:cross:724049024943915209> | You didn't provide a true role.");
+            if (!role) return message.error("You didn't provide a true role.");
 
             if (guild.settings.leveling.roles.xp.get(args[2])) {
-              if (guild.settings.leveling.roles.xp.get(args[2]) === role.id) return message.channel.send("<:cross:724049024943915209> | This role is already set up for this xp.");
+              if (guild.settings.leveling.roles.xp.get(args[2]) === role.id) return message.error("This role is already set up for this xp.");
             } else {
               guild.settings.leveling.roles.xp.set(args[2], role.id)
+              message.guild.settings.leveling.roles.xp.set(args[2], role.id)
             }
 
-            await guild.save().then(() => message.channel.send({embed: {description: `<:tick:724048990626381925> | ${role} has been set for \`${args[2]} xp\` as a leveled role.`}})).catch(err => message.channel.send(`An error occured: ${err}`))
+            await guild.save().then(() => message.success(`${role} has been set for \`${args[2]} xp\` as a leveled role.`, true)).catch(err => message.error(`An error occured: ${err}`))
 
           } else if (args[1].toLowerCase() == "remove") {
             //Remove leveled role
             let xp = Number(args[2]) ? args[2] : false
-            if (!xp) return message.channel.send("<:cross:724049024943915209> | You need to provide a xp.");
+            if (!xp) return message.error("You need to provide a xp.");
 
             let role = guild.settings.leveling.roles.xp.get(xp)
-            if (!role) return message.channel.send("<:cross:724049024943915209> | This xp does not have any roles set.");
+            if (!role) return message.error("This xp does not have any roles set.");
 
             guild.settings.leveling.roles.xp.set(xp, undefined)
-            await guild.save().then(() => message.channel.send({embed: {description: `<:tick:724048990626381925> | <@&${role}> has been removed from the \`${xp}xp\`.`}})).catch(err => message.channel.send(`An error occured: ${err}`))
+            message.guild.settings.leveling.roles.xp.set(xp, undefined)
+            await guild.save().then(() => message.success(`<@&${role}> has been removed from the \`${xp}xp\`.`, true)).catch(err => message.error(`An error occured: ${err}`))
 
+          } else {
+            return message.error("You didn't provide a true option, `add, remove` or leave blank for list.", true, "xp <add - remove> <xp> <role>")
           }
         } else {
-          return message.channel.send("<:cross:724049024943915209> | You didn't provide a true option, `level, xp`");
+          return message.error("You didn't provide a true option, `level, xp`", true, this.usage);
         }
       }
     })

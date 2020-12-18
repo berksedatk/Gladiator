@@ -16,14 +16,14 @@ const mongoose = require('mongoose');
 const { Client, Collection } = require("discord.js");
 const client = new Client({
   disableMentions: "everyone",
-  messageCacheMaxSize: 50,
+  messageCacheMaxSize: 35,
   messageCacheLifetime: 30,
   messageSweepInterval: 60
 }, {
   partials: ['MESSAGE', 'CHANNEL', 'REACTION']
 }, {
   ws: {
-    intents: ['GUILD_CREATE','GUILD_DELETE','MESSAGE_CREATE','GUILD_MEMBER_ADD']
+    intents: ['GUILDS','GUILD_MEMBERS','GUILD_MESSAGES','GUILD_MESSAGE_REACTIONS','DIRECT_MESSAGES']
   }
 });
 

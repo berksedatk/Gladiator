@@ -25,7 +25,7 @@ module.exports = {
         .addField("Born On", bot.user.createdAt)
         .addField("Servers", `${bot.guilds.cache.size.toLocaleString()} servers`, true)
         .addField("Channels", `${bot.channels.cache.size.toLocaleString()} channels`, true)
-        .addField("Users", `${bot.users.cache.size.toLocaleString()} users`, true)
+        .addField("Fetched Users", `${bot.users.cache.size.toLocaleString()} users`, true)
         .addField("Current Version", config.version, true)
         .addField("Prefixes", `\`${config.prefixes.join(", ")}\``, true)
         .addField("Ping", `Latency \`${msg.createdTimestamp - message.createdTimestamp}ms\``, true)
