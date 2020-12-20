@@ -68,7 +68,7 @@ module.exports = {
           str = str.slice(1);
   	    }
         try {
-          user = userCache.get(str)
+          user = memberCache.get(str)
         } catch(err) {
           try {
             user = await message.guild.members.fetch(str)
