@@ -17,7 +17,7 @@ module.exports = {
           user = userCache.get(str)
         } catch(err) {
           try {
-            user = await userCache.fetch(str)
+            user = await client.users.fetch(str)
           } catch(err) {
             return;
           }
@@ -71,7 +71,7 @@ module.exports = {
           user = userCache.get(str)
         } catch(err) {
           try {
-            user = await userCache.fetch(str)
+            user = await message.guild.members.fetch(str)
           } catch(err) {
             return;
           }
@@ -96,6 +96,10 @@ module.exports = {
     } else {
       member = Array.isArray(member) ? member[0] : member
     }
+
+    try {
+      user = await message.guild.members.fetch(str)
+    } catch(err) {}
 
     return member;
 
