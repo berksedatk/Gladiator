@@ -17,8 +17,6 @@ module.exports = {
   guildOnly: true,
   async execute(bot, message, args) {
 
-    await message.guild.members.fetch()
-
     let user,joinposition,content,roles,icon;
 
     if (!args[0]) {
@@ -32,6 +30,9 @@ module.exports = {
     }
     if (user.guild) {
       //Join Pos
+
+      await message.guild.members.fetch()
+
       let arr = message.guild.members.cache.array();
       arr.sort((a, b) => a.joinedAt - b.joinedAt);
 

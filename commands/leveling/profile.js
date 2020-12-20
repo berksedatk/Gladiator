@@ -50,7 +50,6 @@ module.exports = {
         }
       })
     } else {
-      await message.guild.members.fetch()
       user = await find.guildMember(bot, message, args[0])
       if (!user) return message.error("You didn't provide a true user.", true, "<user mention/name>")
       user = user.user
@@ -81,8 +80,6 @@ module.exports = {
             }
             guild.save().catch(err => message.channel.send(`An error occured: ${err}`));
           }
-
-          await message.guild.members.fetch()
 
           let users = [];
           guild.members.forEach(membere => {

@@ -73,7 +73,7 @@ module.exports = {
           try {
             user = await message.guild.members.fetch(str)
           } catch(err) {
-            return;
+            return err;
           }
         }
     }
@@ -96,10 +96,6 @@ module.exports = {
     } else {
       member = Array.isArray(member) ? member[0] : member
     }
-
-    try {
-      user = await message.guild.members.fetch(str)
-    } catch(err) {}
 
     return member;
 
