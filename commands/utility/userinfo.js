@@ -32,7 +32,7 @@ module.exports = {
       //Join Pos
 
       await message.guild.members.fetch()
-
+      
       let arr = message.guild.members.cache.array();
       arr.sort((a, b) => a.joinedAt - b.joinedAt);
 
