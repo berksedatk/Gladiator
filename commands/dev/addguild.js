@@ -1,4 +1,5 @@
 const Discord = require("discord.js");
+const Guild = require("../../schemas/guild.js")
 
 module.exports = {
   name: "addguild",
