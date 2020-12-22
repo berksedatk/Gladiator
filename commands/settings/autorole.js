@@ -4,7 +4,7 @@ const find = require("../../utility/find.js");
 
 module.exports = {
   name: "autorole",
-  category: "Moderation",
+  category: "Settings",
   description: "Adds a role to users or bots upon join",
   usage: "<add - remove - toggle - list> <user - bot> <role>",
   cooldown: 5,

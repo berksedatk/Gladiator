@@ -5,7 +5,7 @@ const w3color = require("../../utility/w3color.js");
 
 module.exports = {
   name: "manage",
-  category: "Moderation",
+  category: "Settings",
   description: "Manage a user's profile.",
   usage: "<user> <xp - level - reset>",
   examples: "g!manage @Sax#6211 xp add 100\ng!manage SpammerGuy level set 1\ng!manage 564393040308076544 reset",

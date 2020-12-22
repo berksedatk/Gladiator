@@ -3,7 +3,7 @@ const Guild = require("../../schemas/guild.js");
 
 module.exports = {
   name: "welcomemessage",
-  category: "Moderation",
+  category: "Settings",
   description: "Gives the newcomers a welcome message.",
   aliases: ["welcomemsg"],
   usage: "[message - channel - toggle]",

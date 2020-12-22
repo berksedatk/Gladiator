@@ -3,7 +3,7 @@ const Guild = require("../../schemas/guild.js");
 
 module.exports = {
   name: "overridepermissions",
-  category: "Moderation",
+  category: "Settings",
   description: "Override command permissions for users, roles or channels",
   aliases: ["op"],
   usage: "<command> <deny - allow | cooldown> <user - role - channel>",

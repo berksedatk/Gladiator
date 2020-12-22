@@ -3,7 +3,7 @@ const Guild = require("../../schemas/guild.js");
 
 module.exports = {
   name: "reactionroles",
-  category: "Moderation",
+  category: "Settings",
   description: "Add or remove reaction roles",
   aliases: ["rr"],
   usage: "<add - remove - list>",
