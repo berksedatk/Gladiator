@@ -241,11 +241,11 @@ module.exports = async (client, message) => {
                             client.channels.cache.get(leveling.reward.level.channel).send(rewardmessage)
                           }
                         }
-                      }).catch(() => {
+                      }).catch(err => {
                         if (leveling.reward.level.channel === "default") {
-                          message.channel.send({embed: {description: `${message.author} could not reward the user with role <@&${lvlrole.role}> because it's either deleted, I can't access the role or I can't manage roles.`}});
+                          message.channel.send({embed: {description: `${message.author} could not reward the user with role <@&${lvlrole.role}> because it's either deleted, I can't access the role or I can't manage roles. Here is the error: ${err}`}});
                         } else {
-                          client.channels.cache.get(leveling.reward.level.channel).send({embed: {description: `${message.author} could not reward the user with role <@&${lvlrole.role}> because it's either deleted, I can't access the role or I can't manage roles.`}});
+                          client.channels.cache.get(leveling.reward.level.channel).send({embed: {description: `${message.author} could not reward the user with role <@&${lvlrole.role}> because it's either deleted, I can't access the role or I can't manage roles. Here is the error: ${err}`}});
                         }
                       });
                     }
