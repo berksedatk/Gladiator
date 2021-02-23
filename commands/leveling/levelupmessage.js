@@ -31,8 +31,10 @@ module.exports = {
         } else if (args[0].toLowerCase() == "toggle") {
           if (guild.settings.leveling.levelup.send) {
             guild.settings.leveling.levelup.send = false
+            message.guild.settings.leveling.levelup.send = false
           } else {
             guild.settings.leveling.levelup.send = true
+            message.guild.settings.leveling.levelup.send = true
           }
           guild.save().then(() => message.success(`Level up message has been toggled to \`${guild.settings.leveling.levelup.send}\``)).catch(err => message.channel.send("An error occured: " + err))
         } else if (args[0].toLowerCase() == "channel") {
