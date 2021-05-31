@@ -30,7 +30,7 @@ module.exports = {
   aliases: ["em"],
   cooldown: 10,
   reqPermissions: ['MANAGE_MESSAGES'],
-  botPermissions: ["EMBED_MESSAGES"],
+  botPermissions: ["EMBED_LINKS"],
   async execute(bot, message, args) {
     let author, authoricon, footer
 
