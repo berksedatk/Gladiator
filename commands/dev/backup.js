@@ -7,6 +7,6 @@ module.exports = {
   execute(bot, message, args) {
     console.log('Backup running...')
     message.channel.send('Backup request sent, check console.')
-    require("../../utility/backup.js").dbAutoBackUp()
+    require("../../utility/backup.js").dbManualBackup()
   }
 };

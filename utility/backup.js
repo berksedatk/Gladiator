@@ -40,6 +40,11 @@ exports.empty = mixedVar => {
   }
   return false;
 };
+//Manual Backup Function
+exports.dbManualBackup = () => {
+  dbOptions.autoBackupPath = process.env.DB_PATH
+  this.dbAutoBackUp()
+}
 
 // Auto backup function
 exports.dbAutoBackUp = () => {
