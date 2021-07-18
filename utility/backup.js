@@ -96,11 +96,12 @@ exports.dbAutoBackUp = () => {
 
     try {
       exec(cmd, (error, stdout, stderr) => {
+        console.log(error)
         if (this.empty(error)) {
           // check for remove old backup after keeping # of days given in configuration.
           if (dbOptions.removeOldBackup == true) {
             if (fs.existsSync(oldBackupPath)) {
-              exec('rm -rf ' + oldBackupPath, err => {});
+              exec('rm -rf ' + oldBackupPath, err => {console.log(err)});
             }
           }
         }
