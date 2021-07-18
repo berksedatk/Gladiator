@@ -1,6 +1,6 @@
 const config = require('../config.json');
 const mongoose = require('mongoose');
-
+const { MessageEmbed } = require('discord.js')
 const Mute = require("../schemas/mute.js");
 const Guild = require('../schemas/guild.js');
 
@@ -99,6 +99,11 @@ module.exports = async client => {
   setInterval(() => {
     console.log('Backup is running...')
     require('../utility/backup.js').dbAutoBackUp()
+    bot.channels.cache.get(config.backupLogs).send(new MessageEmbed()
+      .setDescription('Database backup has started.')
+      .setTimestamp()
+      .setColor('GREEN')
+    )
   }, 86400000);
 
   //Client info
