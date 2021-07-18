@@ -16,8 +16,10 @@ module.exports = {
         let guildObject = bot.guilds.cache.has(server.guildID)
         Guild.findOne({guildID: server.guildID}, (err, guild) => {
           if (err) return console.log("error on " + server.guildID);
-          if (server.guildID = 264445053596991498) guild.blacklisted = true;
+          let blacklisted;
+          if (server.guildID = 264445053596991498) blacklisted = true;
           if (guild) {
+            guild.blacklisted = blacklisted
             guild.settings = {
               join: {
                 autorole: {
@@ -100,7 +102,7 @@ module.exports = {
             let newGuild = new Guild({
               guildName: guildObject.name,
               guildID: guildObject.id,
-              blacklisted: false,
+              blacklisted: blacklisted,
               removed: false,
               members: {},
               cases: {},
