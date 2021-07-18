@@ -15,7 +15,8 @@ const dbOptions = {
   autoBackup: true,
   removeOldBackup: true,
   keepLastDaysBackup: 2,
-  autoBackupPath: backupDirPath
+  autoBackupPath: backupDirPath,
+  uri: process.env.DB_URL
 };
 
 // return stringDate as a date object.
@@ -81,16 +82,10 @@ exports.dbAutoBackUp = () => {
 
     // Command for mongodb dump process
     let cmd =
-      'mongodump --host ' +
-      dbOptions.host +
-      ' --port ' +
-      dbOptions.port +
+      'mongodump --uri ' +
+      dbOptions.uri +
       ' --db ' +
       dbOptions.database +
-      ' --username ' +
-      dbOptions.user +
-      ' --password ' +
-      dbOptions.pass +
       ' --out ' +
       newBackupPath;
 
