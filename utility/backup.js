@@ -84,8 +84,6 @@ exports.dbAutoBackUp = () => {
     let cmd =
       'mongodump --uri ' +
       dbOptions.uri +
-      ' --db ' +
-      dbOptions.database +
       ' --out ' +
       newBackupPath;
 
