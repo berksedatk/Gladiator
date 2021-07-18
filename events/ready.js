@@ -97,8 +97,9 @@ module.exports = async client => {
 
   //backups
   setInterval(() => {
-    require("../utility/backup.js")(client);
-  }, 43200000);
+    console.log('Backup is running...')
+    require('../utility/backup.js').dbAutoBackUp()
+  }, 86400000);
 
   //Client info
   console.log(`Discord - Bot is ready.
