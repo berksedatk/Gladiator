@@ -13,6 +13,7 @@ module.exports = {
   async execute(bot, message, args) {
     await servers.forEach(server => {
       if (bot.guilds.cache.has(server.guildID)) {
+        let guildObject = bot.guilds.cache.has(server.guildID)
         Guild.findOne({guildID: server.guildID}, (err, guild) => {
           if (err) return console.log("error on " + server.guildID);
           if (server.guildID = 264445053596991498) guild.blacklisted = true;
